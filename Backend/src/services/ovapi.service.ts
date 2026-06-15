@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises"
+import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
 
 interface Entity {
@@ -11,10 +11,10 @@ interface Entity {
 export class OVApiDataUpdater {
 
 	API_URL = "gtfs.ovapi.nl/nl";
-	ENTITES_FILE_NAME = "index.json"
-	RT_DATA_DIR = "data/rt-data"
+	ENTITES_FILE_NAME = "index.json";
+	RT_DATA_DIR = "data/rt-data";
 
-	entities: Entity[] = []
+	entities: Entity[] = [];
 	
 	constructor(syncUrls: string[]) {
 
