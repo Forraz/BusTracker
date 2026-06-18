@@ -1,11 +1,12 @@
-import { Service } from "../core/Service.js";
+import { Service } from "../core/service.js";
+import { type Coordinates } from "../models/coordinates.js";
 
 export class GeocodingService extends Service {
 
 	API_KEY = process.env.GEOCODING_API_KEY;
 	API_URL = "https://api.geoapify.com/v1/geocode";
 
-	async getGeoPositionByAddress(address: string) {
+	public async getCoordinatesByAddress(address: string): Promise<Coordinates> {
 
 		if (this.API_KEY == null) {
 
@@ -29,15 +30,23 @@ export class GeocodingService extends Service {
 
 			}
 
-			const data = await response.json();
+			const jsonData: any = await response.json();
+			const geoJsonData = jsonData.features[0].properties;
 
-			return data;
+			const coordinates: Coordinates = {
+				lat: geoJsonData.lat,
+				lon: geoJsonData.lon,
+			};
+
+			return coordinates;
 
 		} catch (error) {
 
 			console.log(error);
 
 		}
+
+		throw Error("Location not found.");
 
 	}
 
