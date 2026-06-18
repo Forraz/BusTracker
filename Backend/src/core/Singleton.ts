@@ -1,19 +1,19 @@
 
 export class Singleton {
 
-	static #instance: Singleton;
+	static _instance: any;
 
 	protected constructor() {}
 
 	public static get instance() {
 
-		if (Singleton.#instance == null) {
+		if (this._instance == null) {
 
-			Singleton.#instance = new Singleton();
+			this._instance = new this();
 
 		}
 
-		return Singleton.#instance;
+		return this._instance;
 
 	}
 
