@@ -17,6 +17,7 @@ export class GeocodingService extends Service {
 		const params = new URLSearchParams();
 		params.append("api_key", this.API_KEY);
 		params.append("text", address);
+		params.append("country", "Netherlands");
 
 		const url = `${this.API_URL}/search?${params}`;
 
