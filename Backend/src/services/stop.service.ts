@@ -51,7 +51,7 @@ export class StopService extends Service {
 
 	}
 
-	getSquaredDistance(lPosition: Coordinates, rPosition: Coordinates): number {
+	private getSquaredDistance(lPosition: Coordinates, rPosition: Coordinates): number {
 
 		const squaredDistance = Math.pow(rPosition.lat - lPosition.lat, 2) + Math.pow(rPosition.lon - lPosition.lon, 2);
 
