@@ -72,3 +72,11 @@ export const stopTimesTable = pgTable("stop_times", {
 	fairUnitsTraveled: integer("fair_units_traveled")
 
 });
+
+export const calendarDatesTable = pgTable("calendar_dates", {
+
+	id: integer("id"),
+	date: text("date"),
+	exceptionType: integer("exception_type")
+
+});
