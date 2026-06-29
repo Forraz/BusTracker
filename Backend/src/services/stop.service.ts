@@ -1,13 +1,13 @@
 import { Service } from "../core/service.js";
 import type { Coordinates } from "../models/coordinates.js";
 import { db } from "../db/client.js";
-import { stopsTable } from "../db/schema.js";
+import { stopsTable, type Stop } from "../db/schema.js";
 
 import { and, between, like } from "drizzle-orm";
 
 export class StopService extends Service {
 
-	async getStopsByName(name: string, limit: number = 10) {
+	async getStopsByName(name: string, limit: number = 10): Promise<Stop[]> {
 
 		const result = await db
 		.select()

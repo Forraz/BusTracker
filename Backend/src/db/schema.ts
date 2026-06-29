@@ -80,3 +80,5 @@ export const calendarDatesTable = pgTable("calendar_dates", {
 	exceptionType: integer("exception_type")
 
 });
+
+export type Stop = typeof stopsTable.$inferSelect;
