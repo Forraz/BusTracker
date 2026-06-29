@@ -1,5 +1,5 @@
 import { Service } from "../core/service.js";
-import type { Coordinates } from "../models/coordinates.js";
+import type { Coordinates } from "../types/coordinates.js";
 import { db } from "../db/client.js";
 import { stopsTable, type Stop } from "../db/schema.js";
 

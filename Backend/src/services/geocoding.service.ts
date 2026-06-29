@@ -1,5 +1,5 @@
 import { Service } from "../core/service.js";
-import { type Coordinates } from "../models/coordinates.js";
+import { type Coordinates } from "../types/coordinates.js";
 
 export class GeocodingService extends Service {
 
