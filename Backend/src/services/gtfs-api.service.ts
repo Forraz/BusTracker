@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
+import { Service } from "../core/service.js";
 
 interface Entity {
 	url: string,
@@ -8,17 +9,26 @@ interface Entity {
 	isDownloading: boolean
 }
 
-export class OVApiDataUpdater {
+export class GTFSApiService extends Service {
 
-	API_URL = "gtfs.ovapi.nl/nl";
-	ENTITES_FILE_NAME = "index.json";
-	RT_DATA_DIR = "data/rt-data";
+	private API_URL = "https://gtfs.ovapi.nl/nl";
+	private INDEX_FILE_NAME = "index.json";
+	private RT_DATA_DIR = "src/data/rt-data";
+
+	SYNC_URLS: string[] = [
+
+		`${this.API_URL}/vehiclePositions.pb`,
+		`${this.API_URL}/tripUpdates.pb`,
+
+	];
 
 	entities: Entity[] = [];
 	
-	constructor(syncUrls: string[]) {
+	protected constructor() {
 
-		this.initializeEntities(syncUrls);
+		super();
+
+		this.initializeEntities();
 
 		setInterval(() => {
 
@@ -26,12 +36,12 @@ export class OVApiDataUpdater {
 
 		}, 5000);
 
-	} 
+	}
 	
-	async initializeEntities(syncUrls: string[]) {
+	async initializeEntities() {
 
 		await this.readEntities();
-		syncUrls.forEach(url => {
+		this.SYNC_URLS.forEach(url => {
 
 			const fileName = url.split("/").at(-1);
 			const filePath = `${this.RT_DATA_DIR}/${fileName}`;
@@ -77,8 +87,6 @@ export class OVApiDataUpdater {
 
 	async syncEntity(entity: Entity) {
 
-		console.log(`Syncing: ${entity.url} `)
-
 		let headers;
 		let response;
 
@@ -105,6 +113,7 @@ export class OVApiDataUpdater {
 			this.updateEntities();
 
 			response = await this.fetchEntity(entity.url);
+			console.log(`Entity at ${entity.url} has been updated`);
 
 			entity.isDownloading = false;
 
@@ -139,7 +148,7 @@ export class OVApiDataUpdater {
 
 	async readEntities() {
 
-		const filePath = `./${this.RT_DATA_DIR}/${this.ENTITES_FILE_NAME}`;
+		const filePath = `./${this.RT_DATA_DIR}/${this.INDEX_FILE_NAME}`;
 		this.entities = [];
 
 		try {
@@ -159,7 +168,7 @@ export class OVApiDataUpdater {
 
 		await this.createDir(this.RT_DATA_DIR);
 
-		const filePath = `./${this.RT_DATA_DIR}/${this.ENTITES_FILE_NAME}`;
+		const filePath = `./${this.RT_DATA_DIR}/${this.INDEX_FILE_NAME}`;
 		const entitiesJson = JSON.stringify({ "entities": this.entities });
 
 		await writeFile(filePath, entitiesJson);
@@ -167,8 +176,6 @@ export class OVApiDataUpdater {
 	}
 
 	async fetchEntity(url: string): Promise<Buffer> {
-
-		console.log(`Fetching: ${url}`);
 
 		const response = await fetch(url);
 
@@ -198,15 +205,11 @@ export class OVApiDataUpdater {
 
 		}
 
-		console.log(`Done: ${url}`);
-
 		return Buffer.concat(result);
 
 	}
 
 	async fetchEntityHeaders(url: string) {
-
-		console.log(`Fetching headers: ${url}`);
 
 		const response = await fetch(url, { method: "HEAD" });
 
