@@ -31,27 +31,51 @@ export class GTFSRtService extends Service {
 
 	private async updateVehiclePositions() {
 
-		const vehiclePositionsBuffer = await readFile("./src/data/rt-data/vehiclePositions.pb");
-		const message = transit_realtime.FeedMessage.decode(vehiclePositionsBuffer);
+		let vehiclePositionsBuffer;
 
-		const vehicles: VehiclePosition[] = message.entity
-			.map((e) => e.vehicle)
-			.filter((v) => v != null) as VehiclePosition[];
+		try {
 
-		this.vehiclePositions = vehicles;
+			vehiclePositionsBuffer = await readFile("./src/data/rt-data/vehiclePositions.pb");
+			const message = transit_realtime.FeedMessage.decode(vehiclePositionsBuffer);
+
+			const vehicles: VehiclePosition[] = message.entity
+				.map((e) => e.vehicle)
+				.filter((v) => v != null) as VehiclePosition[];
+
+			this.vehiclePositions = vehicles;
+
+		} catch (err) {
+
+			console.warn("Failed to update vehicle positions: ", {
+				error: err
+			});
+
+		}
 
 	}
 
 	private async updateTripUpdates() {
 
-		const tripUpdatesBuffer = await readFile("./src/data/rt-data/tripUpdates.pb");
-		const message = transit_realtime.FeedMessage.decode(tripUpdatesBuffer);
+		let tripUpdatesBuffer;
 
-		const tripUpdates: TripUpdate[] = message.entity
-			.map((e) => e.tripUpdate)
-			.filter((v) => v != null) as TripUpdate[];
+		try {
 
-		this.tripUpdates = tripUpdates;
+			tripUpdatesBuffer = await readFile("./src/data/rt-data/tripUpdates.pb");
+			const message = transit_realtime.FeedMessage.decode(tripUpdatesBuffer);
+
+			const tripUpdates: TripUpdate[] = message.entity
+				.map((e) => e.tripUpdate)
+				.filter((v) => v != null) as TripUpdate[];
+
+			this.tripUpdates = tripUpdates;
+
+		} catch (err) {
+
+			console.warn("Failed to update trip updates: ", {
+				error: err
+			});
+
+		}
 
 	}
 
