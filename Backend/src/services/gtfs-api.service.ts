@@ -1,5 +1,7 @@
+import { EventEmitter } from "node:events";
 import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
+
 import { Service } from "../core/service.js";
 
 interface Entity {
@@ -7,6 +9,12 @@ interface Entity {
 	filePath: string,
 	etag: string,
 	isDownloading: boolean
+}
+
+export enum EventName {
+
+	EntitiesUpdated = "entitiesUpdated"
+
 }
 
 export class GTFSApiService extends Service {
@@ -23,6 +31,7 @@ export class GTFSApiService extends Service {
 	];
 
 	entities: Entity[] = [];
+	events: EventEmitter = new EventEmitter();
 	
 	protected constructor() {
 
@@ -113,6 +122,10 @@ export class GTFSApiService extends Service {
 			this.updateEntities();
 
 			response = await this.fetchEntity(entity.url);
+
+			const fileName = entity.filePath.split("/").at(-1);
+
+			this.events.emit(EventName.EntitiesUpdated, { entityName: fileName });
 			console.log(`Entity at ${entity.url} has been updated`);
 
 			entity.isDownloading = false;

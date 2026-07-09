@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { Service } from "../core/service.js";
 import type { TripUpdate, VehiclePosition } from "../types/gtfs.js";
 import { transit_realtime } from "../gtfs/gtfs-rt.js";
+import { EventName, GTFSApiService } from "./gtfs-api.service.js";
 
 export class GTFSRtService extends Service {
 
@@ -13,6 +14,11 @@ export class GTFSRtService extends Service {
 		super();
 
 		this.updateFeeds();
+		GTFSApiService.instance.events.on(EventName.EntitiesUpdated, (e: { entityName: string }) => {
+
+			this.updateFeeds();
+
+		});
 
 	}
 
