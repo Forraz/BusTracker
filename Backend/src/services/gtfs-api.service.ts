@@ -77,7 +77,7 @@ export class GTFSApiService extends Service {
 				
 		});
 
-		await this.updateEntities();
+		await this.updateIndex();
 
 	}
 
@@ -119,16 +119,9 @@ export class GTFSApiService extends Service {
 			entity.isDownloading = true;
 
 			this.entities[this.entities.findIndex(ent => ent.url == entity.url)] = entity;
-			this.updateEntities();
+			this.updateIndex();
 
 			response = await this.fetchEntity(entity.url);
-
-			const fileName = entity.filePath.split("/").at(-1);
-
-			this.events.emit(EventName.EntitiesUpdated, { entityName: fileName });
-			console.log(`Entity at ${entity.url} has been updated`);
-
-			entity.isDownloading = false;
 
 		} catch (err){
 
@@ -137,11 +130,17 @@ export class GTFSApiService extends Service {
 
 		}
 		
+		entity.isDownloading = false;
 		entity.etag = etag;
 		this.entities[this.entities.findIndex(ent => ent.url == entity.url)] = entity;
-		this.updateEntities();
+		this.updateIndex();
 
 		await this.writeEntity(entity.filePath, response);
+
+		const fileName = entity.filePath.split("/").at(-1);
+
+		this.events.emit(EventName.EntitiesUpdated, { entityName: fileName });
+		console.log(`Entity at ${entity.url} has been updated`);
 
 	}
 
@@ -171,13 +170,13 @@ export class GTFSApiService extends Service {
 
 		} catch (err) {
 
-			console.error(err);
+			this.entities = [];
 
 		}
 
 	}
 
-	async updateEntities() {
+	async updateIndex() {
 
 		await this.createDir(this.RT_DATA_DIR);
 

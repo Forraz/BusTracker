@@ -50,6 +50,8 @@ export class GTFSRtService extends Service {
 				error: err
 			});
 
+			this.vehiclePositions = [];
+
 		}
 
 	}
@@ -74,6 +76,8 @@ export class GTFSRtService extends Service {
 			console.warn("Failed to update trip updates: ", {
 				error: err
 			});
+
+			this.tripUpdates = [];
 
 		}
 
