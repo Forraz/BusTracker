@@ -35,12 +35,18 @@ export class TripService extends Service {
 
 	}
 
-	async getTripById(id: number): Promise<Trip[]> {
+	async getTripById(id: number): Promise<Trip> {
 
-		const result = await db
+		const [result] = await db
 			.select()
 			.from(tripsTable)
 			.where(eq(tripsTable.id, id))
+
+		if (!result) {
+
+			throw new Error("Trip not found");
+
+		}
 
 		return result;
 			
