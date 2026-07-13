@@ -11,7 +11,7 @@ const port = 3000;
 const gtfsApiService: GTFSApiService = GTFSApiService.instance;
 const gtfsRtService: GTFSRtService = GTFSRtService.instance
 
-app.use("/api/stop", stopRouter);
+app.use("/api/stops", stopRouter);
 
 app.listen(port, () => {
 
