@@ -7,15 +7,15 @@ import { today } from "../utils/gtfs-time.js";
 
 export class TripService extends Service {
 
-	async getTodayTripsByStop(stopId: string): Promise<Trip[]> {
+	async getTodayTripsByStopId(stopId: string): Promise<Trip[]> {
 
 		const date = today();
 
-		return this.getTripsByStop(stopId, date);
+		return this.getTripsByStopId(stopId, date);
 
 	}
 	
-	async getTripsByStop(stopId: string, date: string): Promise<Trip[]> {
+	async getTripsByStopId(stopId: string, date: string): Promise<Trip[]> {
 
 		const result = await db
 			.select({
