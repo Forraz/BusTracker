@@ -24,14 +24,21 @@ export class VehicleService extends Service {
 
 	}
 
-	getVehicleByTripId(id: string): VehiclePosition | undefined {
+	getVehicleByTripId(id: string): VehiclePosition {
 
 		const gtfGTFSRtService: GTFSRtService = GTFSRtService.instance;
 		const vehiclePositions: VehiclePosition[] = gtfGTFSRtService.getVehiclePositions();
 
-		return vehiclePositions.find((v) => v.trip?.tripId === id);
+		const vehicle = vehiclePositions.find((v) => v.trip?.tripId === id);
+
+		if (vehicle == null) {
+
+			throw new Error("Vehicle not found");
+
+		}
+
+		return vehicle;
 
 	}
-
 
 }
