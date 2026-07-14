@@ -35,7 +35,7 @@ export class TripService extends Service {
 
 	}
 
-	async getTripById(id: number): Promise<Trip> {
+	async getTripById(id: string): Promise<Trip> {
 
 		const [result] = await db
 			.select()
