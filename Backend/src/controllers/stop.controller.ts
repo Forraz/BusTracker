@@ -5,10 +5,15 @@ import { StopService } from "../services/stop.service.js";
 import { type Stop } from "../db/schema.js";
 import { mapStopToDTO, type StopDTO } from "../dto/stop.dto.js";
 
+interface StopIdParams {
+
+	id: string
+
+}
 
 export class StopController extends Controller {
 
-	public async handleGetStops(req: Request, res: Response) {
+	public async handleFindStops(req: Request, res: Response) {
 
 		const stopService: StopService = StopService.instance;
 
@@ -48,6 +53,25 @@ export class StopController extends Controller {
 		const responseData = {
 
 			stops: stops
+
+		};
+
+		res.status(200).json(responseData);
+
+	}
+
+	public async handleGetStopById(req: Request<StopIdParams>, res: Response) {
+
+		const stopService: StopService = StopService.instance;
+
+		const stopId = req.params.id;
+
+		const stop: Stop = await stopService.getStopById(stopId);
+		const stopDTO: StopDTO = mapStopToDTO(stop);
+
+		const responseData = {
+
+			stop: stopDTO
 
 		};
 

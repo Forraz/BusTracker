@@ -3,7 +3,7 @@ import type { Coordinates } from "../types/coordinates.js";
 import { db } from "../db/client.js";
 import { stopsTable, type Stop } from "../db/schema.js";
 
-import { and, between, like } from "drizzle-orm";
+import { and, between, eq, like } from "drizzle-orm";
 
 export class StopService extends Service {
 
@@ -46,6 +46,23 @@ export class StopService extends Service {
 			return aDistance - bDistance;
 
 		});
+
+		return result;
+
+	}
+
+	async getStopById(id: string): Promise<Stop> {
+
+		const [result] = await db
+			.select()
+			.from(stopsTable)
+			.where(eq(stopsTable.id, id))
+
+		if (result == null) {
+
+			throw new Error("Stop not found");
+
+		}
 
 		return result;
 
