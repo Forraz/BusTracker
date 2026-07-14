@@ -7,4 +7,5 @@ export const tripRouter = Router();
 const tripController: TripController = TripController.instance;
 
 tripRouter.get("/:id", tripController.handleGetTripById);
+tripRouter.get("/:id/vehicle", tripController.handleGetVehicleByTripId);
 
