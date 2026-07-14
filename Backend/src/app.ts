@@ -4,16 +4,18 @@ import { stopRouter } from "./routers/stop.router.js";
 import { GTFSApiService } from "./services/gtfs-api.service.js";
 import { GTFSRtService } from "./services/gtfs-rt.service.js";
 import { tripRouter } from "./routers/trip.router.js";
+import { handleErrors } from "./middleware/handleErrors.js";
 
 
 const app = express();
 const port = 3000;
 
 const gtfsApiService: GTFSApiService = GTFSApiService.instance;
-const gtfsRtService: GTFSRtService = GTFSRtService.instance
+const gtfsRtService: GTFSRtService = GTFSRtService.instance;
 
 app.use("/api/stops", stopRouter);
 app.use("/api/trips", tripRouter)
+app.use(handleErrors);
 
 app.listen(port, () => {
 

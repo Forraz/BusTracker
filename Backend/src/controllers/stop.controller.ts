@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 import { Controller } from "../core/controller.js";
 import { type Stop, type Trip } from "../db/schema.js";
@@ -17,7 +17,7 @@ interface StopIdParams {
 
 export class StopController extends Controller {
 
-	public async handleFindStops(req: Request, res: Response) {
+	public async handleFindStops(req: Request, res: Response, next: NextFunction) {
 
 		const stopService: StopService = StopService.instance;
 
@@ -64,7 +64,7 @@ export class StopController extends Controller {
 
 	}
 
-	public async handleGetStopById(req: Request<StopIdParams>, res: Response) {
+	public async handleGetStopById(req: Request<StopIdParams>, res: Response, next: NextFunction) {
 
 		const stopService: StopService = StopService.instance;
 
@@ -83,7 +83,7 @@ export class StopController extends Controller {
 
 	}
 
-	public async handleGetTripsByStopId(req: Request<StopIdParams>, res: Response) {
+	public async handleGetTripsByStopId(req: Request<StopIdParams>, res: Response, next: NextFunction) {
 
 		const tripService: TripService = TripService.instance;
 
@@ -124,7 +124,7 @@ export class StopController extends Controller {
 
 	}
 
-	public async handleGetVehiclesByStopId(req: Request<StopIdParams>, res: Response) {
+	public async handleGetVehiclesByStopId(req: Request<StopIdParams>, res: Response, next: NextFunction) {
 
 		const tripService: TripService = TripService.instance;
 		const vehicleService: VehicleService = VehicleService.instance;

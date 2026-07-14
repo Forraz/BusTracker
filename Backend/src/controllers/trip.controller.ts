@@ -1,5 +1,5 @@
 import { Controller } from "../core/controller.js";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { TripService } from "../services/trip.service.js";
 import { mapTripToDTO, type TripDTO } from "../dto/trip.dto.js";
 import { VehicleService } from "../services/vehicle.service.js";
@@ -14,7 +14,7 @@ interface TripIdParams {
 
 export class TripController extends Controller {
 
-	async handleGetTripById(req: Request<TripIdParams>, res: Response) {
+	async handleGetTripById(req: Request<TripIdParams>, res: Response, next: NextFunction) {
 
 		const tripService: TripService = TripService.instance;
 
@@ -39,7 +39,7 @@ export class TripController extends Controller {
 
 	}
 
-	async handleGetVehicleByTripId(req: Request<TripIdParams>, res: Response) {
+	async handleGetVehicleByTripId(req: Request<TripIdParams>, res: Response, next: NextFunction) {
 
 		const vehicleService: VehicleService = VehicleService.instance;
 
