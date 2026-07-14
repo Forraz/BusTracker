@@ -2,7 +2,7 @@ import { Service } from "../core/service.js";
 import type { Coordinates } from "../types/coordinates.js";
 import { db } from "../db/client.js";
 import { stopsTable, type Stop } from "../db/schema.js";
-
+import { NotFoundError } from "../errors/errors.js";
 import { and, between, eq, like } from "drizzle-orm";
 
 export class StopService extends Service {
@@ -60,7 +60,7 @@ export class StopService extends Service {
 
 		if (result == null) {
 
-			throw new Error("Stop not found");
+			throw new NotFoundError(`Stop ${id} not found`);
 
 		}
 

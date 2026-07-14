@@ -3,6 +3,7 @@ import { Service } from "../core/service.js";
 import { db } from "../db/client.js";
 import { calendarDatesTable, stopTimesTable, tripsTable, type Trip } from "../db/schema.js";
 import { today } from "../utils/gtfs-time.js";
+import { NotFoundError } from "../errors/errors.js";
 
 
 export class TripService extends Service {
@@ -44,7 +45,7 @@ export class TripService extends Service {
 
 		if (!result) {
 
-			throw new Error("Trip not found");
+			throw new NotFoundError(`Trip ${id} not found`);
 
 		}
 
