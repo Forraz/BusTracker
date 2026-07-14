@@ -8,14 +8,14 @@ import { Service } from "../core/service.js";
 import { getTableName } from "drizzle-orm";
 
 import { pool } from "../db/client.js";
-import { routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
+import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
 
 export class GTFSImportService extends Service {
 
 	public async loadData() {
 
 		const client: PoolClient =  await pool.connect();
-		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable];
+		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable, calendarDatesTable];
 
 		try {
 
@@ -25,7 +25,7 @@ export class GTFSImportService extends Service {
 
 			for (const table of tables) {
 
-				const csvPath = `./data/static-data/${getTableName(table)}.txt`;
+				const csvPath = `./src/data/static-data/${getTableName(table)}.txt`;
 				await this.loadDataToTable(csvPath, table, client); 
 
 			}
@@ -56,42 +56,5 @@ export class GTFSImportService extends Service {
 		await pipeline(sourceStream, ingestStream);
 
 	}
-
-	// private async loadDataToTable(csvPath: string, table: PgTable) {
-	//
-	// 	const client = await pool.connect();
-	//
-	// 	try {
-	//
-	// 		const tableName = getTableName(table);
-	// 		const newTableName = `${tableName}_new`;  
-	//
-	// 		await client.query("BEGIN;");
-	//
-	// 		await client.query(`CREATE TABLE ${newTableName} (LIKE ${tableName} INCLUDING ALL)`);
-	//
-	// 		const ingestStream = client.query(from(`COPY ${newTableName} FROM STDIN DELIMITER ',' CSV HEADER;`));
-	// 		const sourceStream = createReadStream(csvPath);
-	// 		await pipeline(sourceStream, ingestStream);
-	//
-	// 		await client.query(`ALTER TABLE ${tableName} RENAME TO ${tableName}_tmp;`);
-	// 		await client.query(`ALTER TABLE ${newTableName} RENAME TO ${tableName};`);
-	//
-	// 		await client.query(`DROP TABLE ${tableName}_tmp;`);
-	//
-	// 		await client.query("COMMIT;");
-	//
-	// 	} catch (e) {
-	//
-	// 		await client.query("ROLLBACK;")
-	// 		console.log(e);
-	//
-	// 	} finally {
-	//
-	// 		client.release();
-	//
-	// 	}
-	//
-	// }
 
 }
