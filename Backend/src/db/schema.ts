@@ -2,7 +2,7 @@ import { pgTable, integer, real, text, time } from "drizzle-orm/pg-core";
 
 export const shapesTable = pgTable("shapes", {
 
-	id: integer("id"),
+	id: text("id"),
 	shapePtSequence: integer("shape_pt_sequence"),
 	shapePtLat: real("shape_pt_lat"),
 	shapePtlon: real("shape_pt_lon"),
@@ -12,7 +12,7 @@ export const shapesTable = pgTable("shapes", {
 
 export const routesTable = pgTable("routes", {
 
-	id: integer("id").primaryKey(),
+	id: text("id").primaryKey(),
 	agencyId: text("agency_id"),
 	routeShortName: text("route_short_name"),
 	routeLongName: text("route_long_name"),
@@ -26,16 +26,16 @@ export const routesTable = pgTable("routes", {
 
 export const tripsTable = pgTable("trips", {
 
-	routeId: integer("route_id").references(() => routesTable.id),
-	serviceId: integer("service_id"),
-	id: integer("id").primaryKey(),
+	routeId: text("route_id"),
+	serviceId: text("service_id"),
+	id: text("id").primaryKey(),
 	realtimeTripId: text("realtime_trip_id"),
 	tripHeadsign: text("trip_headsign"),
 	tripShortName: text("trip_short_name"),
 	tripLongName: text("trip_long_name"),
 	directionId: integer("direction_id"), 
 	blockId: text("block_id"),
-	shapeId: integer("shape_id"),
+	shapeId: text("shape_id"),
 	wheelchairAccessible: integer("wheelchair_accessible"),
 	bikesAllowed: integer("bikes_allowed"),
 
@@ -59,9 +59,9 @@ export const stopsTable = pgTable("stops", {
 
 export const stopTimesTable = pgTable("stop_times", {
 
-	tripId: integer("trip_id").references(() => tripsTable.id),
+	tripId: text("trip_id"),
 	stopSequence: integer("stop_sequence"),
-	stopId: text("stop_id").references(() => stopsTable.id),
+	stopId: text("stop_id"),
 	stopHeadsign: text("head_sign"),
 	arrivalTime: text("arrival_time"),
 	departureTime: text("departure_time"),
@@ -75,7 +75,7 @@ export const stopTimesTable = pgTable("stop_times", {
 
 export const calendarDatesTable = pgTable("calendar_dates", {
 
-	id: integer("id"),
+	id: text("id"),
 	date: text("date"),
 	exceptionType: integer("exception_type")
 
