@@ -7,4 +7,5 @@ export const stopRouter = Router();
 
 stopRouter.get("/", StopController.instance.handleFindStops);
 stopRouter.get("/:id", StopController.instance.handleGetStopById);
+stopRouter.get("/:id/trips", StopController.instance.handleGetTripsByStopId);
 
