@@ -2,11 +2,11 @@ import type { Trip } from "../db/schema.js";
 
 export interface TripDTO {
 
-	id: number,
-	routeId: number,
-	serviceId: number,
+	id: string,
+	routeId: string,
+	serviceId: string,
 	directionId: number,
-	shapeId: number,
+	shapeId: string,
 
 }
 
