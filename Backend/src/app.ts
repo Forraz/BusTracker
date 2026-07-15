@@ -5,6 +5,7 @@ import { GTFSApiService } from "./services/gtfs-api.service.js";
 import { GTFSRtService } from "./services/gtfs-rt.service.js";
 import { tripRouter } from "./routers/trip.router.js";
 import { handleErrors } from "./middleware/handleErrors.js";
+import { routeRouter } from "./routers/route.router.js";
 
 
 const app = express();
@@ -15,6 +16,7 @@ const gtfsRtService: GTFSRtService = GTFSRtService.instance;
 
 app.use("/api/stops", stopRouter);
 app.use("/api/trips", tripRouter)
+app.use("/api/routes", routeRouter)
 app.use(handleErrors);
 
 app.listen(port, () => {
