@@ -83,3 +83,4 @@ export const calendarDatesTable = pgTable("calendar_dates", {
 
 export type Stop = typeof stopsTable.$inferSelect;
 export type Trip = typeof tripsTable.$inferSelect;
+export type Route = typeof routesTable.$inferSelect;
