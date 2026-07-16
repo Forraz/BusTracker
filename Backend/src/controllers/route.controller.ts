@@ -3,9 +3,12 @@ import type { Request, Response, NextFunction } from "express";
 import { Controller } from "../core/controller.js";
 import { type RouteDTO, mapRouteToDTO } from "../dto/route.dto.js";
 import { type StopDTO, mapStopToDTO } from "../dto/stop.dto.js";
+import { type VehicleDTO, mapVehicleToDTO } from "../dto/vehicle.dto.js";
 import type { Route, Stop } from "../db/schema.js";
 import { RouteService } from "../services/route.service.js";
 import { StopService } from "../services/stop.service.js";
+import { VehicleService } from "../services/vehicle.service.js";
+import type { VehiclePosition } from "../types/gtfs.js";
 
 interface RouteIdParams {
 
@@ -73,6 +76,47 @@ export class RouteController extends Controller {
 
 		res.status(200).json(responseData);
 
+
+	}
+
+	public async handleGetVehiclesByRouteId(req: Request<RouteIdParams>, res: Response, next: NextFunction) {
+
+		const vehicleService: VehicleService = VehicleService.instance;
+
+		const routeId = req.params.id;
+
+		const results: VehiclePosition[] = await vehicleService.getVehiclesByRouteId(routeId);
+
+		const vehicles: VehicleDTO[] = results.map((vehicle) => {
+
+			let vehicleDTO: VehicleDTO;
+
+			try {
+
+				vehicleDTO = mapVehicleToDTO(vehicle);
+
+			} catch (e) {
+
+				console.warn("Failed to map vehicle to DTO: ", {
+					tripId: vehicle.trip?.tripId,
+					error: e
+				});
+
+				return null;
+
+			}
+
+			return vehicleDTO;
+
+		}).filter((dto) => dto != null);
+
+		const responseData = {
+
+			vehicles: vehicles
+
+		};
+
+		res.status(200).json(responseData);
 
 	}
 

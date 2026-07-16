@@ -8,3 +8,4 @@ const routeController: RouteController = RouteController.instance;
 
 routeRouter.get("/:id", routeController.handleGetRouteById);
 routeRouter.get("/:id/stops", routeController.handleGetStopsByRouteId);
+routeRouter.get("/:id/vehicles", routeController.handleGetVehiclesByRouteId);

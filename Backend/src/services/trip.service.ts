@@ -53,4 +53,15 @@ export class TripService extends Service {
 			
 	}
 
+	async getTripsByRouteId(id: string): Promise<Trip[]> {
+
+		const result = await db
+			.select()
+			.from(tripsTable)
+			.where(eq(tripsTable.routeId, id));
+
+		return result;
+
+	}
+
 }
