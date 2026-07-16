@@ -4,7 +4,6 @@ import { db } from "../db/client.js";
 import { stopsTable, stopTimesTable, tripsTable, type Stop } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
 import { and, between, eq, getTableColumns, like } from "drizzle-orm";
-import { TripService } from "./trip.service.js";
 
 export class StopService extends Service {
 
