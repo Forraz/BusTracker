@@ -70,19 +70,16 @@ export class StopService extends Service {
 
 	async getStopsByRouteId(routeId: string) {
 
-		const [trip] = await db
-			.select()
-			.from(tripsTable)
-			.where(eq(tripsTable.routeId, routeId))
-			.limit(1);
-
-		if (trip == null) {
-
-			throw new NotFoundError(`Route ${routeId} has no trips planned`);
-
-		}
-
-		const stops = await this.getStopsByTripId(trip.id);
+		const stops: Stop[] = await db
+			.select({
+				...getTableColumns(stopsTable)
+			})
+			.from(stopTimesTable)
+			.innerJoin(stopsTable, eq(stopTimesTable.stopId, stopsTable.id))
+			.innerJoin(tripsTable, eq(stopTimesTable.tripId, tripsTable.id))
+			.where(
+				eq(tripsTable.routeId, routeId)
+			)
 
 		return stops;
 
