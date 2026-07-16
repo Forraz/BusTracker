@@ -71,7 +71,7 @@ export class StopService extends Service {
 	async getStopsByRouteId(routeId: string) {
 
 		const stops: Stop[] = await db
-			.select({
+			.selectDistinct({
 				...getTableColumns(stopsTable)
 			})
 			.from(stopTimesTable)
