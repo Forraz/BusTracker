@@ -7,7 +7,9 @@ import { mapVehicleToDTO, type VehicleDTO } from "../dto/vehicle.dto.js";
 import type { VehiclePosition } from "../types/gtfs.js";
 import { ShapeService } from "../services/shape.service.js";
 import { type ShapeDTO, mapShapeToDTO } from "../dto/shape.dto.js";
-import type { Shape } from "../db/schema.js";
+import type { Shape, Stop } from "../db/schema.js";
+import { StopService } from "../services/stop.service.js";
+import { type StopDTO, mapStopToDTO } from "../dto/stop.dto.js";
 
 interface TripIdParams {
 
@@ -54,7 +56,7 @@ export class TripController extends Controller {
 
 		}
 
-		const vehicle: VehiclePosition = vehicleService.getVehicleByTripId(tripId);
+		const vehicle: VehiclePosition = await vehicleService.getVehicleByTripId(tripId);
 		const vehicleDTO: VehicleDTO = mapVehicleToDTO(vehicle);
 
 		const responseData = {
@@ -85,6 +87,51 @@ export class TripController extends Controller {
 		const responseData = {
 
 			shape: shapeDTO
+
+		};
+
+		res.status(200).json(responseData);
+
+	}
+
+	async handleGetStopsByTripId(req: Request<TripIdParams>, res: Response, next: NextFunction) {
+
+		const tripId = req.params.id;
+
+		const tripService: TripService = TripService.instance;
+		await tripService.getTripById(tripId);
+
+		const stopService: StopService = StopService.instance;
+
+		const results: Stop[] = await stopService.getStopsByTripId(tripId);
+
+		const stops: StopDTO[] = results.map((stop) => {
+
+			let stopDTO;
+
+			try {
+
+				stopDTO = mapStopToDTO(stop);
+
+			} catch (e) {
+
+				console.warn("Failed to map stop to DTO: ", {
+					stopId: stop.id,
+					error: e
+				});
+
+				return null;
+
+			}
+
+			return stopDTO;
+
+
+		}).filter((dto) => dto != null);
+
+		const responseData = {
+
+			stops: stops
 
 		};
 
