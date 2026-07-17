@@ -4,6 +4,7 @@ import { db } from "../db/client.js";
 import { calendarDatesTable, routesTable, stopTimesTable, tripsTable, type Route } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
 import { today } from "../utils/gtfs-time.js";
+import { StopService } from "./stop.service.js";
 
 
 export class RouteService extends Service {
@@ -26,6 +27,9 @@ export class RouteService extends Service {
 	} 
 
 	async getRoutesByStopId(stopId: string): Promise<Route[]> {
+
+		const stopService: StopService = StopService.instance;
+		await stopService.getStopById(stopId);
 
 		const date = today();
 

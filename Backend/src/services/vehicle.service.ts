@@ -3,6 +3,8 @@ import type { VehiclePosition } from "../types/gtfs.js";
 import type { Trip } from "../db/schema.js";
 import { GTFSRtService } from "./gtfs-rt.service.js";
 import { TripService } from "./trip.service.js";
+import { NotFoundError } from "../errors/errors.js";
+import { RouteService } from "./route.service.js";
 
 export class VehicleService extends Service {
 
@@ -10,6 +12,9 @@ export class VehicleService extends Service {
 
 		const tripService: TripService = TripService.instance;
 		const trips = await tripService.getTripsByRouteId(routeId);
+
+		const routeService: RouteService = RouteService.instance;
+		await routeService.getRouteById(routeId);
 
 		const vehicles = this.filterVehiclesByTrips(trips);
 
@@ -36,16 +41,19 @@ export class VehicleService extends Service {
 
 	}
 
-	getVehicleByTripId(id: string): VehiclePosition {
+	async getVehicleByTripId(id: string): Promise<VehiclePosition> {
 
 		const gtfGTFSRtService: GTFSRtService = GTFSRtService.instance;
 		const vehiclePositions: VehiclePosition[] = gtfGTFSRtService.getVehiclePositions();
+
+		const tripService: TripService = TripService.instance;
+		await tripService.getTripById(id);
 
 		const vehicle = vehiclePositions.find((v) => v.trip?.tripId === id);
 
 		if (vehicle == null) {
 
-			throw new Error("Vehicle not found");
+			throw new NotFoundError("Vehicle not found");
 
 		}
 

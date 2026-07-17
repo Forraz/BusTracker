@@ -4,6 +4,8 @@ import { db } from "../db/client.js";
 import { calendarDatesTable, stopTimesTable, tripsTable, type Trip } from "../db/schema.js";
 import { today } from "../utils/gtfs-time.js";
 import { NotFoundError } from "../errors/errors.js";
+import { StopService } from "./stop.service.js";
+import { RouteService } from "./route.service.js";
 
 
 export class TripService extends Service {
@@ -17,6 +19,9 @@ export class TripService extends Service {
 	}
 	
 	async getTripsByStopId(stopId: string, date: string): Promise<Trip[]> {
+
+		const stopService: StopService = StopService.instance;
+		await stopService.getStopById(stopId);
 
 		const result = await db
 			.select({
@@ -43,7 +48,7 @@ export class TripService extends Service {
 			.from(tripsTable)
 			.where(eq(tripsTable.id, id))
 
-		if (!result) {
+		if (result == null) {
 
 			throw new NotFoundError(`Trip ${id} not found`);
 
@@ -53,12 +58,15 @@ export class TripService extends Service {
 			
 	}
 
-	async getTripsByRouteId(id: string): Promise<Trip[]> {
+	async getTripsByRouteId(routeId: string): Promise<Trip[]> {
+
+		const routeService: RouteService = RouteService.instance;
+		await routeService.getRouteById(routeId);
 
 		const result = await db
 			.select()
 			.from(tripsTable)
-			.where(eq(tripsTable.routeId, id));
+			.where(eq(tripsTable.routeId, routeId));
 
 		return result;
 

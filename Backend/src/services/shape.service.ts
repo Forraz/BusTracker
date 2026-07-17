@@ -3,6 +3,7 @@ import { Service } from "../core/service.js";
 import { db } from "../db/client.js";
 import { shapesTable, tripsTable, type Shape } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
+import { TripService } from "./trip.service.js";
 
 
 export class ShapeService extends Service {
@@ -25,6 +26,9 @@ export class ShapeService extends Service {
 	}
 
 	async getShapeByTripId(tripId: string): Promise<Shape[]> {
+
+		const tripService: TripService = TripService.instance;
+		await tripService.getTripById(tripId);
 
 		const result = await db
 			.select({
