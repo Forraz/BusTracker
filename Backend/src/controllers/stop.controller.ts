@@ -8,6 +8,7 @@ import { type RouteDTO, mapRouteToDTO } from "../dto/route.dto.js";
 
 import { StopService } from "../services/stop.service.js";
 import { RouteService } from "../services/route.service.js";
+import { BadRequestError } from "../errors/errors.js";
 
 
 interface StopIdParams {
@@ -35,7 +36,7 @@ export class StopController extends Controller {
 
 		if (!query) {
 
-			return;
+			throw new BadRequestError("Missing a query parameter");
 
 		}
 
