@@ -4,8 +4,9 @@ import { StopController } from "../controllers/stop.controller.js";
 
 
 export const stopRouter = Router();
+const stopController: StopController = StopController.instance;
 
-stopRouter.get("/", StopController.instance.handleFindStops);
-stopRouter.get("/:id", StopController.instance.handleGetStopById);
-stopRouter.get("/:id/routes", StopController.instance.handleGetRoutesByStopId);
+stopRouter.get("/", stopController.handleFindStops);
+stopRouter.get("/:id", stopController.handleGetStopById);
+stopRouter.get("/:id/routes", stopController.handleGetRoutesByStopId);
 

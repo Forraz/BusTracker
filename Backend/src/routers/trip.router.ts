@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { TripController } from "../controllers/trip.controller.js";
 
 
