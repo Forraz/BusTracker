@@ -1,9 +1,11 @@
-import { Controller } from "../core/controller.js";
 import type { Request, Response, NextFunction } from "express";
-import { ShapeService } from "../services/shape.service.js";
+
+import { Controller } from "../core/controller.js";
 import type { Shape } from "../db/schema.js"; 
 import { type ShapeDTO, mapShapeToDTO } from "../dto/shape.dto.js";
+import { ShapeService } from "../services/shape.service.js";
  
+
 interface ShapeIdParams {
 
 	id: string
@@ -12,13 +14,19 @@ interface ShapeIdParams {
 
 export class ShapeController extends Controller {
 
+	constructor(
+
+		private readonly shapeService: ShapeService = ShapeService.instance,
+
+	) {
+
+		super();
+
+	}
+
 	async handleGetShapeById(req: Request<ShapeIdParams>, res: Response, next: NextFunction) {
 
-		const shapeService: ShapeService = ShapeService.instance;
-		
-		const shapeId = req.params.id;
-
-		const results: Shape[] = await shapeService.getShapeById(shapeId);
+		const results: Shape[] = await this.shapeService.getShapeById(req.params.id);
 		const shape: ShapeDTO = mapShapeToDTO(results);
 
 		const responseData = {
@@ -30,6 +38,5 @@ export class ShapeController extends Controller {
 		res.status(200).json(responseData);
 
 	}
-
 
 }

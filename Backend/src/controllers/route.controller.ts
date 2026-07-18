@@ -10,6 +10,7 @@ import { StopService } from "../services/stop.service.js";
 import { VehicleService } from "../services/vehicle.service.js";
 import type { VehiclePosition } from "../types/gtfs.js";
 
+
 interface RouteIdParams {
 
 	id: string
@@ -18,13 +19,21 @@ interface RouteIdParams {
 
 export class RouteController extends Controller {
 
+	constructor(
+
+		private readonly routeService: RouteService = RouteService.instance,
+		private readonly vehicleService: VehicleService = VehicleService.instance,
+		private readonly stopService: StopService = StopService.instance
+
+	) {
+
+		super();
+
+	}
+
 	public async handleGetRouteById(req: Request<RouteIdParams>, res: Response, next: NextFunction) {
 
-		const routeService: RouteService = RouteService.instance;
-
-		const routeId = req.params.id;
-
-		const route: Route = await routeService.getRouteById(routeId);
+		const route: Route = await this.routeService.getRouteById(req.params.id);
 		const routeDTO: RouteDTO = mapRouteToDTO(route);
 
 		const responseData = {
@@ -39,11 +48,7 @@ export class RouteController extends Controller {
 
 	public async handleGetStopsByRouteId(req: Request<RouteIdParams>, res: Response, next: NextFunction) {
 
-		const stopService: StopService = StopService.instance;
-
-		const routeId = req.params.id;
-
-		const results: Stop[] = await stopService.getStopsByRouteId(routeId);
+		const results: Stop[] = await this.stopService.getStopsByRouteId(req.params.id);
 
 		const stops: StopDTO[] = results.map((stop) => {
 
@@ -76,16 +81,11 @@ export class RouteController extends Controller {
 
 		res.status(200).json(responseData);
 
-
 	}
 
 	public async handleGetVehiclesByRouteId(req: Request<RouteIdParams>, res: Response, next: NextFunction) {
 
-		const vehicleService: VehicleService = VehicleService.instance;
-
-		const routeId = req.params.id;
-
-		const results: VehiclePosition[] = await vehicleService.getVehiclesByRouteId(routeId);
+		const results: VehiclePosition[] = await this.vehicleService.getVehiclesByRouteId(req.params.id);
 
 		const vehicles: VehicleDTO[] = results.map((vehicle) => {
 
