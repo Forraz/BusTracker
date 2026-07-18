@@ -1,15 +1,15 @@
 
 import type { Request, Response, NextFunction } from "express";
-import { NotFoundError } from "../errors/errors.js";
+import { HttpError } from "../errors/errors.js";
 
 export function handleErrors(err: Error, req: Request, res: Response, next: NextFunction) {
 
 	let message = err.message;
 	let status;
 
-	if (err instanceof NotFoundError) {
+	if (err instanceof HttpError) {
 
-		status = 404;
+		status = err.status
 
 	} else {
 
