@@ -1,5 +1,4 @@
 import { Service } from "../core/service.js";
-import { InternalServerError } from "../errors/errors.js";
 import { type Coordinates } from "../types/coordinates.js";
 
 export class GeocodingService extends Service {
@@ -24,7 +23,7 @@ export class GeocodingService extends Service {
 
 		try {
 
-			const response = await fetch(url, {method: "GET"});
+			const response = await fetch(url, { method: "GET" });
 
 			const jsonData: any = await response.json();
 			const geoJsonData = jsonData.features[0].properties;
