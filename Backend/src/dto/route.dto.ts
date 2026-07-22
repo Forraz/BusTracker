@@ -1,4 +1,5 @@
 import type { Route } from "../db/schema.js";
+import { mapManyToDTO } from "./mapper.js";
 
 export interface RouteDTO {
 
@@ -28,4 +29,16 @@ export function mapRouteToDTO(route: Route): RouteDTO {
 	
 }
 
+export function mapRoutesToDTO(routes: Route[]): RouteDTO[] {
 
+	return mapManyToDTO<Route, RouteDTO>(
+
+		routes,
+		mapRouteToDTO,
+		"Route",
+		(r) => { return { id: r.id }}
+
+	);
+
+
+}

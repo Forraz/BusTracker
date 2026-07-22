@@ -12,7 +12,7 @@ import { StopService } from "../services/stop.service.js";
 import { type TripDTO, mapTripToDTO } from "../dto/trip.dto.js";
 import { type VehicleDTO, mapVehicleToDTO } from "../dto/vehicle.dto.js";
 import { type ShapeDTO, mapShapeToDTO } from "../dto/shape.dto.js";
-import { type StopDTO, mapStopToDTO } from "../dto/stop.dto.js";
+import { type StopDTO, mapStopsToDTO } from "../dto/stop.dto.js";
 
 
 interface TripIdParams {
@@ -85,29 +85,7 @@ export class TripController extends Controller {
 
 		const results: Stop[] = await this.stopService.getStopsByTripId(req.params.id);
 
-		const stops: StopDTO[] = results.map((stop) => {
-
-			let stopDTO;
-
-			try {
-
-				stopDTO = mapStopToDTO(stop);
-
-			} catch (e) {
-
-				console.warn("Failed to map stop to DTO: ", {
-					stopId: stop.id,
-					error: e
-				});
-
-				return null;
-
-			}
-
-			return stopDTO;
-
-
-		}).filter((dto) => dto != null);
+		const stops: StopDTO[] = mapStopsToDTO(results);
 
 		const responseData = {
 

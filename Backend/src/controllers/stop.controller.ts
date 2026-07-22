@@ -3,8 +3,8 @@ import type { Request, Response, NextFunction } from "express";
 import { Controller } from "../core/controller.js";
 import { type Route, type Stop } from "../db/schema.js";
 
-import { type StopDTO, mapStopToDTO } from "../dto/stop.dto.js";
-import { type RouteDTO, mapRouteToDTO } from "../dto/route.dto.js";
+import { type StopDTO, mapStopToDTO, mapStopsToDTO } from "../dto/stop.dto.js";
+import { type RouteDTO, mapRoutesToDTO } from "../dto/route.dto.js";
 
 import { StopService } from "../services/stop.service.js";
 import { RouteService } from "../services/route.service.js";
@@ -41,28 +41,7 @@ export class StopController extends Controller {
 		}
 
 		const resultsByName: Stop[] = await this.stopService.getStopsByName(query);
-		const stops: StopDTO[] = resultsByName.map((stop) => {
-
-			let stopDTO: StopDTO;
-
-			try {
-
-				stopDTO = mapStopToDTO(stop);
-
-			} catch (e) {
-
-				console.warn("Failed to map stop to DTO: ", {
-					stopId: stop.id,
-					error: e
-				});
-
-				return null;
-
-			}
-
-			return stopDTO;
-
-		}).filter((dto) => dto != null);
+		const stops: StopDTO[] = mapStopsToDTO(resultsByName);
 
 		const responseData = {
 
@@ -92,29 +71,7 @@ export class StopController extends Controller {
 	public async handleGetRoutesByStopId(req: Request<StopIdParams>, res: Response, next: NextFunction) {
 
 		const results: Route[] = await this.routeService.getRoutesByStopId(req.params.id);
-		const routes: RouteDTO[] = results.map((route) => {
-
-			let routeDTO: RouteDTO;
-
-			try {
-
-				routeDTO = mapRouteToDTO(route);
-
-			} catch (e) {
-
-				console.warn("Failed to map route to DTO: ", {
-					id: route.id,
-					error: e
-				});
-
-				return null;
-
-			}
-
-			return routeDTO;
-
-		}).filter((dto) => dto != null);
-
+		const routes: RouteDTO[] = mapRoutesToDTO(results);
 
 		const responseData = {
 

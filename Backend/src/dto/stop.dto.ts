@@ -1,5 +1,6 @@
 import type { Coordinates } from "../types/coordinates.js";
 import type { Stop } from "../db/schema.js";
+import { mapManyToDTO } from "./mapper.js";
 
 export interface StopDTO {
 
@@ -11,8 +12,6 @@ export interface StopDTO {
 
 export function mapStopToDTO(stop: Stop): StopDTO {
 
-	const stopName: string = stop.stopName == null ? "Unnamed station" : stop.stopName;
-
 	if (stop.stopLat == null || stop.stopLon == null) {
 
 		throw new Error(`Stop ${stop.id} is missing coordinates`);
@@ -22,7 +21,7 @@ export function mapStopToDTO(stop: Stop): StopDTO {
 	const dto: StopDTO = {
 
 		id: stop.id,
-		name: stopName,
+		name: stop.stopName ?? "Unnamed Station",
 		coordinates: {
 			lat: stop.stopLat,
 			lon: stop.stopLon
@@ -32,4 +31,17 @@ export function mapStopToDTO(stop: Stop): StopDTO {
 
 	return dto;
 	
+}
+
+export function mapStopsToDTO(stops: Stop[]): StopDTO[] {
+
+	return mapManyToDTO<Stop, StopDTO>(
+
+		stops,
+		mapStopToDTO,
+		"Stop",
+		(s) => { return { id: s.id }}
+
+	);
+
 }

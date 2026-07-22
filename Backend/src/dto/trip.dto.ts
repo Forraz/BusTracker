@@ -1,4 +1,5 @@
 import type { Trip } from "../db/schema.js";
+import { mapManyToDTO } from "./mapper.js";
 
 export interface TripDTO {
 
@@ -49,4 +50,17 @@ export function mapTripToDTO(trip: Trip): TripDTO {
 
 	return dto;
 	
+}
+
+export function mapTripsToDTO(trips: Trip[]): TripDTO[] {
+
+	return mapManyToDTO<Trip, TripDTO>(
+
+		trips,
+		mapTripToDTO,
+		"Trip",
+		(t) => { return { id: t.id }}
+
+	);
+
 }

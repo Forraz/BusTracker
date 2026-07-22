@@ -1,5 +1,6 @@
 import type { VehiclePosition } from "../types/gtfs.js";
 import type { Coordinates } from "../types/coordinates.js";
+import { mapManyToDTO } from "./mapper.js";
 
 export interface VehicleDTO {
 
@@ -46,5 +47,18 @@ export function mapVehicleToDTO(vehicle: VehiclePosition): VehicleDTO {
 	};
 
 	return dto;
+
+}
+
+export function mapVehiclesToDTO(vehicles: VehiclePosition[]): VehicleDTO[] {
+
+	return mapManyToDTO<VehiclePosition, VehicleDTO>(
+
+		vehicles,
+		mapVehicleToDTO,
+		"Vehicle",
+		(v) => { return { tripId: v.trip?.tripId ?? "Unknown" }}
+
+	);
 
 }
