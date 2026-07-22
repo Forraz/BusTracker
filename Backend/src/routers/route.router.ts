@@ -6,6 +6,6 @@ export const routeRouter = Router();
 
 const routeController: RouteController = RouteController.instance;
 
-routeRouter.get("/:id", routeController.handleGetRouteById);
-routeRouter.get("/:id/stops", routeController.handleGetStopsByRouteId);
-routeRouter.get("/:id/vehicles", routeController.handleGetVehiclesByRouteId);
+routeRouter.get("/:id", routeController.handleGetRouteById.bind(routeController));
+routeRouter.get("/:id/stops", routeController.handleGetStopsByRouteId.bind(routeController));
+routeRouter.get("/:id/vehicles", routeController.handleGetVehiclesByRouteId.bind(routeController));
