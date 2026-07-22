@@ -3,6 +3,7 @@ import { Service } from "../core/service.js";
 import type { TripUpdate, VehiclePosition } from "../types/gtfs.js";
 import { transit_realtime } from "../gtfs/gtfs-rt.js";
 import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
+import { logger } from "../utils/logger.js";
 
 export class GTFSRtService extends Service {
 
@@ -56,11 +57,17 @@ export class GTFSRtService extends Service {
 
 			this.vehiclePositions = vehicles;
 
-		} catch (err) {
+		} catch (err: any) {
 
-			console.warn("Failed to update vehicle positions: ", {
-				error: err
-			});
+			if (err.code == "ENOENT") {
+
+				logger.info("Trip updates entity is not available yet")
+
+			} else {
+
+				logger.error({ err }, "Failed to update trip updates");
+
+			}
 
 			this.vehiclePositions = [];
 
@@ -83,11 +90,17 @@ export class GTFSRtService extends Service {
 
 			this.tripUpdates = tripUpdates;
 
-		} catch (err) {
+		} catch (err: any) {
 
-			console.warn("Failed to update trip updates: ", {
-				error: err
-			});
+			if (err.code == "ENOENT") {
+
+				logger.info("Vehicle positions entity is not available yet")
+
+			} else {
+
+				logger.error({ err }, "Failed to update vehicle positions");
+
+			}
 
 			this.tripUpdates = [];
 

@@ -1,6 +1,7 @@
 
 import type { Request, Response, NextFunction } from "express";
 import { HttpError } from "../errors/errors.js";
+import { logger } from "../utils/logger.js";
 
 export function handleErrors(err: Error, req: Request, res: Response, next: NextFunction) {
 
@@ -15,7 +16,7 @@ export function handleErrors(err: Error, req: Request, res: Response, next: Next
 
 		status = 500;
 		message = "Something went wrong"
-		console.error(err);
+		logger.error({ err }, "Request handling failed");
 
 	}
 

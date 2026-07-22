@@ -6,6 +6,7 @@ import { NotFoundError } from "../errors/errors.js";
 import { and, between, eq, getTableColumns, like } from "drizzle-orm";
 import { RouteService } from "./route.service.js";
 import { TripService } from "./trip.service.js";
+import { logger } from "../utils/logger.js";
 
 export class StopService extends Service {
 

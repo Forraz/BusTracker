@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
 
 import { Service } from "../core/service.js";
+import { logger } from "../utils/logger.js";
 
 export interface Entity {
 	url: string,
@@ -167,7 +168,7 @@ export class GTFSApiService extends Service {
 		
 		} catch (err) {
 
-			console.error(err);
+			logger.error({ entity: entity.url, ...{ err } }, "Failed to fetch entity headers");
 			return;
 
 		}
@@ -186,7 +187,7 @@ export class GTFSApiService extends Service {
 
 		} catch (err) {
 
-			console.error(err);
+			logger.error({ entity: entity.url, ...{ err } }, "Failed to fetch entity");
 
 			entity.isDownloading = false;
 			entity.etag = "";
@@ -202,7 +203,7 @@ export class GTFSApiService extends Service {
 		await this.writeEntity(entity, entityData);
 
 		this.events.emit(EventName.EntityUpdated, { entity: entity });
-		console.log(`Entity at ${entity.url} has been updated`);
+		logger.info({ entity: entity.url }, "GTFS entity updated");
 
 	}
 
@@ -260,17 +261,17 @@ export class GTFSApiService extends Service {
 
 		const response = await fetch(url);
 
-		console.log(`Fetching entity: ${url}`);
+		logger.debug({ entity: url }, "Fetching entity");
 
 		if (!response.ok) {
 
-			throw new Error(`Response code: ${response.status}`);
+			throw new Error(`${url} respond with ${response.status} status code`);
 
 		}
 
 		if (!response.body) {
 
-			throw new Error("Empty response");
+			throw new Error(`${url} returned an empty response`);
 
 		}
 
@@ -295,11 +296,11 @@ export class GTFSApiService extends Service {
 	async fetchEntityHeaders(url: string) {
 
 		const response = await fetch(url, { method: "HEAD" });
-		console.log(`Fetching headers: ${url}`);
+		logger.debug({ entity: url }, "Fetching entity headers");
 
 		if (!response.ok) {
 
-			throw new Error(`Response code: ${response.status}`);
+			throw new Error(`${url} respond with ${response.status} status code`);
 
 		}
 

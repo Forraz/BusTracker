@@ -1,4 +1,5 @@
 import { Service } from "../core/service.js";
+import { InternalServerError } from "../errors/errors.js";
 import { type Coordinates } from "../types/coordinates.js";
 
 export class GeocodingService extends Service {
@@ -10,7 +11,7 @@ export class GeocodingService extends Service {
 
 		if (this.API_KEY == null) {
 
-			throw Error("Geoapify api key not found.");
+			throw new Error("Geoapify api key not found.");
 
 		}
 
@@ -25,12 +26,6 @@ export class GeocodingService extends Service {
 
 			const response = await fetch(url, {method: "GET"});
 
-			if (!response.ok) {
-
-				throw Error(`${response.status}`);
-
-			}
-
 			const jsonData: any = await response.json();
 			const geoJsonData = jsonData.features[0].properties;
 
@@ -41,13 +36,11 @@ export class GeocodingService extends Service {
 
 			return coordinates;
 
-		} catch (error) {
+		} catch (err) {
 
-			console.log(error);
+			throw new Error("Geocoding api request failed");
 
 		}
-
-		throw Error("Location not found.");
 
 	}
 

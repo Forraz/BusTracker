@@ -1,3 +1,4 @@
+import { logger } from "../utils/logger.js";
 
 
 export function mapManyToDTO<TEntity, TDTO>(
@@ -17,10 +18,10 @@ export function mapManyToDTO<TEntity, TDTO>(
 
 			} catch (err) {
 
-				console.warn(`Failed to map ${name} to DTO`, {
+				logger.warn({
 					...getInfo(entity),
-					error: err
-				});
+					...{ err }
+				}, `Failed to map ${name} to DTO`);
 
 				return null;
 			}

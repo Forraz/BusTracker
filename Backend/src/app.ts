@@ -8,6 +8,7 @@ import { handleErrors } from "./middleware/handleErrors.js";
 import { routeRouter } from "./routers/route.router.js";
 import { shapeRouter } from "./routers/shape.router.js";
 import { GTFSImportService } from "./services/gtfs-import.service.js";
+import { logger } from "./utils/logger.js";
 
 
 const app = express();
@@ -25,7 +26,7 @@ app.use(handleErrors);
 
 app.listen(port, () => {
 
-	console.log(`Listening on port ${port}`);
+	logger.info(`Listening on port ${port}`);
 
 });
 

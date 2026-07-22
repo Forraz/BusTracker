@@ -11,6 +11,7 @@ import { pool } from "../db/client.js";
 import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
 import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
 import { unzip } from "../utils/unzip.js";
+import { logger } from "../utils/logger.js";
 
 export class GTFSImportService extends Service {
 
@@ -51,7 +52,7 @@ export class GTFSImportService extends Service {
 		try {
 
 			await client.query("BEGIN;");
-			console.log("Loading data into the database");
+			logger.info("Loading GTFS data into the database");
 
 			await client.query(`TRUNCATE ${tables.map(t => getTableName(t)).join(', ')} RESTART IDENTITY CASCADE;`)
 
@@ -64,12 +65,12 @@ export class GTFSImportService extends Service {
 			}
 
 			await client.query("COMMIT;");
-			console.log("Finished loading data into the database");
+			logger.info("Finished loading GTFS data into the database");
 
-		} catch (e) {
+		} catch (err) {
 
 			await client.query("ROLLBACK;")
-			console.log(e);
+			logger.error({ err }, "GTFS data loading transaction failed");
 
 		} finally {
 
