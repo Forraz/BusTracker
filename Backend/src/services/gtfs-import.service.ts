@@ -9,10 +9,41 @@ import { getTableName } from "drizzle-orm";
 
 import { pool } from "../db/client.js";
 import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
+import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
+import { unzip } from "../utils/unzip.js";
 
 export class GTFSImportService extends Service {
 
-	public async loadData() {
+	protected constructor() {
+
+		super();
+
+		GTFSApiService.instance.events.on(EventName.EntityUpdated, (e: { entity: Entity }) => {
+
+			if (e.entity.type == "static") {
+
+				this.updateData(e.entity.fileName);
+
+			}
+
+		});
+	}
+
+	private async updateData(dataFileName: string) {
+
+		await this.unzipData(dataFileName);
+		await this.loadData();
+
+	}
+
+	private async unzipData(zipFileName: string) {
+
+		const staticDataPath = `./${GTFSApiService.instance.STATIC_DATA_DIR}`;
+		await unzip(`${staticDataPath}/${zipFileName}`, staticDataPath);
+
+	}
+
+	private async loadData() {
 
 		const client: PoolClient =  await pool.connect();
 		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable, calendarDatesTable];
@@ -20,17 +51,20 @@ export class GTFSImportService extends Service {
 		try {
 
 			await client.query("BEGIN;");
+			console.log("Loading data into the database");
 
 			await client.query(`TRUNCATE ${tables.map(t => getTableName(t)).join(', ')} RESTART IDENTITY CASCADE;`)
 
 			for (const table of tables) {
 
-				const csvPath = `./src/data/static-data/${getTableName(table)}.txt`;
+				const staticDataPath = `./${GTFSApiService.instance.STATIC_DATA_DIR}`;
+				const csvPath = `${staticDataPath}/${getTableName(table)}.txt`;
 				await this.loadDataToTable(csvPath, table, client); 
 
 			}
 
 			await client.query("COMMIT;");
+			console.log("Finished loading data into the database");
 
 		} catch (e) {
 

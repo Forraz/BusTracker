@@ -4,29 +4,39 @@ import { writeFile, mkdir } from "node:fs/promises";
 
 import { Service } from "../core/service.js";
 
-interface Entity {
+export interface Entity {
 	url: string,
-	filePath: string,
+	fileName: string,
+	fileDirPath: string,
+	type: "static" | "rt"
 	etag: string,
 	isDownloading: boolean
 }
 
 export enum EventName {
 
-	EntitiesUpdated = "entitiesUpdated"
+	EntityUpdated = "entityUpdated"
 
 }
 
 export class GTFSApiService extends Service {
 
 	private API_URL = "https://gtfs.ovapi.nl/nl";
-	private INDEX_FILE_NAME = "index.json";
-	private RT_DATA_DIR = "src/data/rt-data";
+	private DATA_DIR_PATH = "src/data"
+	private INDEX_PATH = `${this.DATA_DIR_PATH}/index.json`;
+	public RT_DATA_DIR = `${this.DATA_DIR_PATH}/rt-data`;
+	public STATIC_DATA_DIR = `${this.DATA_DIR_PATH}/static-data`;
 
-	SYNC_URLS: string[] = [
+	private RT_SYNC_URLS: string[] = [
 
 		`${this.API_URL}/vehiclePositions.pb`,
 		`${this.API_URL}/tripUpdates.pb`,
+
+	];
+
+	private STATIC_SYNC_URLS: string[] = [
+
+		`${this.API_URL}/gtfs-nl.zip`,
 
 	];
 
@@ -37,28 +47,67 @@ export class GTFSApiService extends Service {
 
 		super();
 
-		this.initializeEntities();
+		this.init();
 
+	}
+
+	async init() {
+
+		await this.initializeIndex();
+
+		this.updateRtData();
 		setInterval(() => {
 
 			this.updateRtData();
 
-		}, 5000);
+		}, 5 * 1000);
 
+		this.updateStaticData();
+		setInterval(() => {
+
+			this.updateStaticData();
+
+		}, 60 * 60 * 1000);
+	}
+
+	async initializeIndex() {
+
+		await this.initializeEntities(this.RT_SYNC_URLS, "rt");
+		await this.initializeEntities(this.STATIC_SYNC_URLS, "static"); 
 	}
 	
-	async initializeEntities() {
+	async initializeEntities(urls: string[], type: "static" | "rt") {
 
 		await this.readEntities();
-		this.SYNC_URLS.forEach(url => {
+		urls.forEach(url => {
 
 			const fileName = url.split("/").at(-1);
-			const filePath = `${this.RT_DATA_DIR}/${fileName}`;
+
+			if (fileName == null) {
+
+				throw new Error(`Wrong sync url format: ${url}`);
+
+			}
+
+			let fileDirPath;
+			
+			if (type == "static") {
+
+				fileDirPath = `./${this.STATIC_DATA_DIR}`;
+
+			} else {
+
+				fileDirPath = `./${this.RT_DATA_DIR}`;
+
+			}
+
 			const etag = "";
 
 			const entity: Entity = {
 				url: url,
-				filePath: filePath,
+				fileName: fileName,
+				fileDirPath: fileDirPath,
+				type: type,
 				etag: etag,
 				isDownloading: false
 			};
@@ -84,20 +133,33 @@ export class GTFSApiService extends Service {
 	async updateRtData() {
 
 		await this.readEntities();
-		await this.syncEntities();
+		await this.syncRtEntities();
 
 	}
 
-	async syncEntities() {
+	async updateStaticData() {
 
-		this.entities.forEach(entity => this.syncEntity(entity));
+		await this.readEntities();
+		await this.syncStaticEntities();
+
+	}
+
+	async syncRtEntities() {
+
+		this.entities.filter((e) => e.type == "rt").forEach(entity => this.syncEntity(entity));
+
+	}
+
+	async syncStaticEntities() {
+
+		this.entities.filter((e) => e.type == "static").forEach(entity => this.syncEntity(entity));
 
 	}
 
 	async syncEntity(entity: Entity) {
 
 		let headers;
-		let response;
+		let entityData;
 
 		try {
 
@@ -117,38 +179,45 @@ export class GTFSApiService extends Service {
 		try {
 
 			entity.isDownloading = true;
+			entity.etag = etag;
+			this.updateEntity(entity);
 
-			this.entities[this.entities.findIndex(ent => ent.url == entity.url)] = entity;
-			this.updateIndex();
+			entityData = await this.fetchEntity(entity.url);
 
-			response = await this.fetchEntity(entity.url);
-
-		} catch (err){
+		} catch (err) {
 
 			console.error(err);
+
+			entity.isDownloading = false;
+			entity.etag = "";
+			this.updateEntity(entity);
+
 			return;
 
 		}
-		
+
 		entity.isDownloading = false;
-		entity.etag = etag;
-		this.entities[this.entities.findIndex(ent => ent.url == entity.url)] = entity;
-		this.updateIndex();
+		this.updateEntity(entity);
 
-		await this.writeEntity(entity.filePath, response);
+		await this.writeEntity(entity, entityData);
 
-		const fileName = entity.filePath.split("/").at(-1);
-
-		this.events.emit(EventName.EntitiesUpdated, { entityName: fileName });
+		this.events.emit(EventName.EntityUpdated, { entity: entity });
 		console.log(`Entity at ${entity.url} has been updated`);
 
 	}
 
-	async writeEntity(filePath: string, data: Buffer) {
+	async updateEntity(entity: Entity) {
 
-		await this.createDir(this.RT_DATA_DIR);
+		this.entities[this.entities.findIndex(ent => ent.url == entity.url)] = entity;
+		this.updateIndex();
 
-		await writeFile(filePath, data);
+	}
+
+	async writeEntity(entity: Entity, data: Buffer) {
+
+		await this.createDir(entity.fileDirPath);
+
+		await writeFile(`${entity.fileDirPath}/${entity.fileName}`, data);
 
 	}
 
@@ -160,7 +229,7 @@ export class GTFSApiService extends Service {
 
 	async readEntities() {
 
-		const filePath = `./${this.RT_DATA_DIR}/${this.INDEX_FILE_NAME}`;
+		const filePath = `./${this.INDEX_PATH}`;
 		this.entities = [];
 
 		try {
@@ -178,9 +247,9 @@ export class GTFSApiService extends Service {
 
 	async updateIndex() {
 
-		await this.createDir(this.RT_DATA_DIR);
+		await this.createDir(this.DATA_DIR_PATH);
 
-		const filePath = `./${this.RT_DATA_DIR}/${this.INDEX_FILE_NAME}`;
+		const filePath = `./${this.INDEX_PATH}`;
 		const entitiesJson = JSON.stringify({ "entities": this.entities });
 
 		await writeFile(filePath, entitiesJson);
@@ -190,6 +259,8 @@ export class GTFSApiService extends Service {
 	async fetchEntity(url: string): Promise<Buffer> {
 
 		const response = await fetch(url);
+
+		console.log(`Fetching entity: ${url}`);
 
 		if (!response.ok) {
 
@@ -224,6 +295,7 @@ export class GTFSApiService extends Service {
 	async fetchEntityHeaders(url: string) {
 
 		const response = await fetch(url, { method: "HEAD" });
+		console.log(`Fetching headers: ${url}`);
 
 		if (!response.ok) {
 
