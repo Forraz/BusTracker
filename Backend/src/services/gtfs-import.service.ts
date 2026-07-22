@@ -51,20 +51,44 @@ export class GTFSImportService extends Service {
 
 		try {
 
-			await client.query("BEGIN;");
 			logger.info("Loading GTFS data into the database");
 
-			await client.query(`TRUNCATE ${tables.map(t => getTableName(t)).join(', ')} RESTART IDENTITY CASCADE;`)
+			await client.query("BEGIN;");
 
 			for (const table of tables) {
+				
+				const tableName = getTableName(table);
+				const stagingTableName = `${tableName}_staging`;
 
-				const staticDataPath = `./${GTFSApiService.instance.STATIC_DATA_DIR}`;
-				const csvPath = `${staticDataPath}/${getTableName(table)}.txt`;
-				await this.loadDataToTable(csvPath, table, client); 
+				const csvPath = `${GTFSApiService.instance.STATIC_DATA_DIR}/${tableName}.txt`;
+
+				await client.query(`
+					DROP TABLE IF EXISTS ${stagingTableName};
+					CREATE TABLE ${stagingTableName} (LIKE ${tableName} INCLUDING ALL);
+				`);
+				await this.loadDataToTable(csvPath, stagingTableName, client); 
 
 			}
 
 			await client.query("COMMIT;");
+
+			await client.query("BEGIN;");
+
+			for (const table of tables) {
+
+				const tableName = getTableName(table);
+				const stagingTableName = `${tableName}_staging`;
+				const oldTableName = `${tableName}_old`;
+
+				await client.query(`ALTER TABLE ${tableName} RENAME TO ${oldTableName}`);
+				await client.query(`ALTER TABLE ${stagingTableName} RENAME TO ${tableName}`);
+
+				await client.query(`DROP TABLE ${oldTableName}`);
+
+			}
+
+			await client.query("COMMIT;");
+
 			logger.info("Finished loading GTFS data into the database");
 
 		} catch (err) {
@@ -78,14 +102,11 @@ export class GTFSImportService extends Service {
 
 		}
 
-
 	}
 
-	private async loadDataToTable(csvPath: string, table: PgTable, client: PoolClient) {
+	private async loadDataToTable(csvPath: string, table: string, client: PoolClient) {
 
-		const tableName = getTableName(table);
-
-		const ingestStream = client.query(from(`COPY ${tableName} FROM STDIN DELIMITER ',' CSV HEADER;`));
+		const ingestStream = client.query(from(`COPY ${table} FROM STDIN DELIMITER ',' CSV HEADER;`));
 		const sourceStream = createReadStream(csvPath);
 
 		await pipeline(sourceStream, ingestStream);
