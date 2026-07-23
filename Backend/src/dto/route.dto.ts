@@ -1,7 +1,7 @@
 import type { Route } from "../db/schema.js";
 import { mapManyToDTO } from "./mapper.js";
 
-export interface RouteDTO {
+export type RouteDTO = {
 
 	id: string,
 	name: string

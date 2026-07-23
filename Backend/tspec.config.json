@@ -1,0 +1,15 @@
+{
+	"specPathGlobs": [
+		"src/specs/*.spec.ts"
+	],
+	"tsconfigPath": "./tsconfig.json",
+	"outputPath": "./docs/openapi.json",
+	"specVersion": 3,
+	"openapi": {
+		"title": "BusTracker APPI",
+		"version": "1.0.0",
+		"servers": [{
+			"url": "/api"
+		}]
+	}
+}

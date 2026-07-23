@@ -1,7 +1,7 @@
 import type { Shape } from "../db/schema.js"
 import type { Coordinates } from "../types/coordinates.js"
 
-export interface ShapeDTO {
+export type ShapeDTO = {
 
 	id: string,
 	parts: {

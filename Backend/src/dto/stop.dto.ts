@@ -2,7 +2,7 @@ import type { Coordinates } from "../types/coordinates.js";
 import type { Stop } from "../db/schema.js";
 import { mapManyToDTO } from "./mapper.js";
 
-export interface StopDTO {
+export type StopDTO = {
 
 	id: string,
 	name: string,

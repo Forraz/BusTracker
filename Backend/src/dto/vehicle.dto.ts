@@ -2,7 +2,7 @@ import type { VehiclePosition } from "../types/gtfs.js";
 import type { Coordinates } from "../types/coordinates.js";
 import { mapManyToDTO } from "./mapper.js";
 
-export interface VehicleDTO {
+export type VehicleDTO = {
 
 	tripId: string,
 	routeId: string,

@@ -1,0 +1,689 @@
+{
+  "info": {
+    "title": "BusTracker APPI",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/trips/{id}": {
+      "get": {
+        "operationId": "TripApiSpec_get_/trips/{id}",
+        "tags": [
+          "Trip"
+        ],
+        "summary": "Get Trip by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "routeId": {
+                      "type": "string"
+                    },
+                    "serviceId": {
+                      "type": "string"
+                    },
+                    "directionId": {
+                      "type": "number"
+                    },
+                    "shapeId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "directionId",
+                    "id",
+                    "routeId",
+                    "serviceId",
+                    "shapeId"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trips/{id}/vehicle": {
+      "get": {
+        "operationId": "TripApiSpec_get_/trips/{id}/vehicle",
+        "tags": [
+          "Trip"
+        ],
+        "summary": "Get Vehicle by Trip id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tripId": {
+                      "type": "string"
+                    },
+                    "routeId": {
+                      "type": "string"
+                    },
+                    "position": {
+                      "type": "object",
+                      "properties": {
+                        "lat": {
+                          "type": "number"
+                        },
+                        "lon": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "lat",
+                        "lon"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "position",
+                    "routeId",
+                    "tripId"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trips/{id}/shape": {
+      "get": {
+        "operationId": "TripApiSpec_get_/trips/{id}/shape",
+        "tags": [
+          "Trip"
+        ],
+        "summary": "Get Shape by Trip id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "parts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "coordinates": {
+                            "type": "object",
+                            "properties": {
+                              "lat": {
+                                "type": "number"
+                              },
+                              "lon": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                              "lat",
+                              "lon"
+                            ]
+                          },
+                          "distTraveled": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "coordinates",
+                          "distTraveled"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "parts"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trips/{id}/stops": {
+      "get": {
+        "operationId": "TripApiSpec_get_/trips/{id}/stops",
+        "tags": [
+          "Trip"
+        ],
+        "summary": "Get Stops by Trip id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "coordinates": {
+                        "type": "object",
+                        "properties": {
+                          "lat": {
+                            "type": "number"
+                          },
+                          "lon": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "lat",
+                          "lon"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "coordinates",
+                      "id",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops": {
+      "get": {
+        "operationId": "StopApiSpec_get_/stops",
+        "tags": [
+          "Stop"
+        ],
+        "summary": "Find stops by name",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "coordinates": {
+                        "type": "object",
+                        "properties": {
+                          "lat": {
+                            "type": "number"
+                          },
+                          "lon": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "lat",
+                          "lon"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "coordinates",
+                      "id",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/{id}": {
+      "get": {
+        "operationId": "StopApiSpec_get_/stops/{id}",
+        "tags": [
+          "Stop"
+        ],
+        "summary": "Get Stop by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "coordinates": {
+                      "type": "object",
+                      "properties": {
+                        "lat": {
+                          "type": "number"
+                        },
+                        "lon": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "lat",
+                        "lon"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "coordinates",
+                    "id",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/{id}/routes": {
+      "get": {
+        "operationId": "StopApiSpec_get_/stops/{id}/routes",
+        "tags": [
+          "Stop"
+        ],
+        "summary": "Get Routes by Stop id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shapes/{id}": {
+      "get": {
+        "operationId": "ShapeApiSpec_get_/shapes/{id}",
+        "tags": [
+          "Shape"
+        ],
+        "summary": "Get shape by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "parts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "coordinates": {
+                            "type": "object",
+                            "properties": {
+                              "lat": {
+                                "type": "number"
+                              },
+                              "lon": {
+                                "type": "number"
+                              }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                              "lat",
+                              "lon"
+                            ]
+                          },
+                          "distTraveled": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "coordinates",
+                          "distTraveled"
+                        ]
+                      }
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "parts"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routes/{id}": {
+      "get": {
+        "operationId": "RouteApiSpec_get_/routes/{id}",
+        "tags": [
+          "Route"
+        ],
+        "summary": "Get Route by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routes/{id}/stops": {
+      "get": {
+        "operationId": "RouteApiSpec_get_/routes/{id}/stops",
+        "tags": [
+          "Route"
+        ],
+        "summary": "Get Stops by Route id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "coordinates": {
+                        "type": "object",
+                        "properties": {
+                          "lat": {
+                            "type": "number"
+                          },
+                          "lon": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "lat",
+                          "lon"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "coordinates",
+                      "id",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routes/{id}/vehicles": {
+      "get": {
+        "operationId": "RouteApiSpec_get_/routes/{id}/vehicles",
+        "tags": [
+          "Route"
+        ],
+        "summary": "Get Vehicles by Route id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tripId": {
+                        "type": "string"
+                      },
+                      "routeId": {
+                        "type": "string"
+                      },
+                      "position": {
+                        "type": "object",
+                        "properties": {
+                          "lat": {
+                            "type": "number"
+                          },
+                          "lon": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "required": [
+                          "lat",
+                          "lon"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "position",
+                      "routeId",
+                      "tripId"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ]
+}
