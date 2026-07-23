@@ -2,10 +2,12 @@ import { from } from "pg-copy-streams"
 import { createReadStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { PgTable } from "drizzle-orm/pg-core";
+import { join } from "node:path";
 import type { PoolClient } from "pg";
+import { getTableName } from "drizzle-orm";
 
 import { Service } from "../core/service.js"; 
-import { getTableName } from "drizzle-orm";
+import { STATIC_DATA_DIR_PATH } from "../core/paths.js";
 
 import { pool } from "../db/client.js";
 import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
@@ -39,8 +41,7 @@ export class GTFSImportService extends Service {
 
 	private async unzipData(zipFileName: string) {
 
-		const staticDataPath = `./${GTFSApiService.instance.STATIC_DATA_DIR}`;
-		await unzip(`${staticDataPath}/${zipFileName}`, staticDataPath);
+		await unzip(join(STATIC_DATA_DIR_PATH, zipFileName), STATIC_DATA_DIR_PATH);
 
 	}
 
@@ -60,7 +61,7 @@ export class GTFSImportService extends Service {
 				const tableName = getTableName(table);
 				const stagingTableName = `${tableName}_staging`;
 
-				const csvPath = `${GTFSApiService.instance.STATIC_DATA_DIR}/${tableName}.txt`;
+				const csvPath = join(STATIC_DATA_DIR_PATH, `${tableName}.txt`);
 
 				await client.query(`
 					DROP TABLE IF EXISTS ${stagingTableName};

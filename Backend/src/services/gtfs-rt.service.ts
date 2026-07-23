@@ -4,6 +4,8 @@ import type { TripUpdate, VehiclePosition } from "../types/gtfs.js";
 import { transit_realtime } from "../gtfs/gtfs-rt.js";
 import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
 import { logger } from "../utils/logger.js";
+import { join } from "node:path";
+import { RT_DATA_DIR_PATH } from "../core/paths.js";
 
 export class GTFSRtService extends Service {
 
@@ -48,7 +50,7 @@ export class GTFSRtService extends Service {
 
 		try {
 
-			vehiclePositionsBuffer = await readFile("./src/data/rt-data/vehiclePositions.pb");
+			vehiclePositionsBuffer = await readFile(join(RT_DATA_DIR_PATH, "vehiclePositions.pb"));
 			const message = transit_realtime.FeedMessage.decode(vehiclePositionsBuffer);
 
 			const vehicles: VehiclePosition[] = message.entity
@@ -81,7 +83,7 @@ export class GTFSRtService extends Service {
 
 		try {
 
-			tripUpdatesBuffer = await readFile("./src/data/rt-data/tripUpdates.pb");
+			tripUpdatesBuffer = await readFile(join(RT_DATA_DIR_PATH, "tripUpdates.pb"));
 			const message = transit_realtime.FeedMessage.decode(tripUpdatesBuffer);
 
 			const tripUpdates: TripUpdate[] = message.entity

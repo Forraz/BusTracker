@@ -1,9 +1,11 @@
 import { EventEmitter } from "node:events";
 import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
 import { Service } from "../core/service.js";
 import { logger } from "../utils/logger.js";
+import { DATA_DIR_PATH, INDEX_FILE_PATH, RT_DATA_DIR_PATH, STATIC_DATA_DIR_PATH } from "../core/paths.js";
 
 export interface Entity {
 	url: string,
@@ -23,10 +25,6 @@ export enum EventName {
 export class GTFSApiService extends Service {
 
 	private API_URL = "https://gtfs.ovapi.nl/nl";
-	private DATA_DIR_PATH = "src/data"
-	private INDEX_PATH = `${this.DATA_DIR_PATH}/index.json`;
-	public RT_DATA_DIR = `${this.DATA_DIR_PATH}/rt-data`;
-	public STATIC_DATA_DIR = `${this.DATA_DIR_PATH}/static-data`;
 
 	private RT_SYNC_URLS: string[] = [
 
@@ -90,17 +88,7 @@ export class GTFSApiService extends Service {
 
 			}
 
-			let fileDirPath;
-			
-			if (type == "static") {
-
-				fileDirPath = `./${this.STATIC_DATA_DIR}`;
-
-			} else {
-
-				fileDirPath = `./${this.RT_DATA_DIR}`;
-
-			}
+			let fileDirPath = type === "static" ? STATIC_DATA_DIR_PATH : RT_DATA_DIR_PATH;
 
 			const etag = "";
 
@@ -218,24 +206,23 @@ export class GTFSApiService extends Service {
 
 		await this.createDir(entity.fileDirPath);
 
-		await writeFile(`${entity.fileDirPath}/${entity.fileName}`, data);
+		await writeFile(join(entity.fileDirPath, entity.fileName), data);
 
 	}
 
 	async createDir(path: string) {
 
-		await mkdir(`./${path}`, { recursive: true });
+		await mkdir(path, { recursive: true });
 
 	}
 
 	async readEntities() {
 
-		const filePath = `./${this.INDEX_PATH}`;
 		this.entities = [];
 
 		try {
 
-			const data = await readFile(filePath);
+			const data = await readFile(INDEX_FILE_PATH);
 			this.entities = JSON.parse(data.toString())["entities"];
 
 		} catch (err) {
@@ -248,12 +235,11 @@ export class GTFSApiService extends Service {
 
 	async updateIndex() {
 
-		await this.createDir(this.DATA_DIR_PATH);
+		await this.createDir(DATA_DIR_PATH);
 
-		const filePath = `./${this.INDEX_PATH}`;
 		const entitiesJson = JSON.stringify({ "entities": this.entities });
 
-		await writeFile(filePath, entitiesJson);
+		await writeFile(INDEX_FILE_PATH, entitiesJson);
 
 	}
 
