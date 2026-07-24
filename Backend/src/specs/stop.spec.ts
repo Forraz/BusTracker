@@ -8,7 +8,10 @@ interface StopSpec {
 		"/stops": {
 			get: {
 				summary: "Find stops by name",
-				query: { query: string },
+				query: { 
+					name: string,
+					limit?: number
+				},
 				responses: {
 					200: StopDTO[]
 				}

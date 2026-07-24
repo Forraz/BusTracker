@@ -17,6 +17,13 @@ interface StopIdParams {
 
 }
 
+interface FindStopsQuery {
+
+	name?: string,
+	limit?: number
+
+}
+
 export class StopController extends Controller {
 
 	constructor(
@@ -30,17 +37,17 @@ export class StopController extends Controller {
 
 	}
 
-	public async handleFindStops(req: Request, res: Response, next: NextFunction) {
+	public async handleFindStops(req: Request<{}, {}, {}, FindStopsQuery>, res: Response, next: NextFunction) {
 
-		const query = req.query["query"]?.toString();
+		if (!req.query.name) {
 
-		if (!query) {
-
-			throw new BadRequestError("Missing a query parameter");
+			throw new BadRequestError("Missing a query parameter: name");
 
 		}
 
-		const resultsByName: Stop[] = await this.stopService.getStopsByName(query);
+		const limit = Number(req.query.limit) || 10;
+
+		const resultsByName: Stop[] = await this.stopService.getStopsByName(req.query.name, limit);
 		const stops: StopDTO[] = mapStopsToDTO(resultsByName);
 
 		const responseData = {

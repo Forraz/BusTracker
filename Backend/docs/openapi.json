@@ -269,11 +269,19 @@
         "summary": "Find stops by name",
         "parameters": [
           {
-            "name": "query",
+            "name": "name",
             "in": "query",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
             }
           }
         ],
