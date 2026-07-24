@@ -54,19 +54,6 @@ export class GTFSApiService extends Service {
 
 		await this.initializeIndex();
 
-		this.updateRtData();
-		setInterval(() => {
-
-			this.updateRtData();
-
-		}, 5 * 1000);
-
-		this.updateStaticData();
-		setInterval(() => {
-
-			this.updateStaticData();
-
-		}, 60 * 60 * 1000);
 	}
 
 	async initializeIndex() {

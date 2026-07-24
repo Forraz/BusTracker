@@ -11,41 +11,25 @@ import { STATIC_DATA_DIR_PATH } from "../core/paths.js";
 
 import { pool } from "../db/client.js";
 import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
-import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
 import { unzip } from "../utils/unzip.js";
 import { logger } from "../utils/logger.js";
 
 export class GTFSImportService extends Service {
 
-	protected constructor() {
-
-		super();
-
-		GTFSApiService.instance.events.on(EventName.EntityUpdated, (e: { entity: Entity }) => {
-
-			if (e.entity.type == "static") {
-
-				this.updateData(e.entity.fileName);
-
-			}
-
-		});
-	}
-
-	private async updateData(dataFileName: string) {
+	public async updateData(dataFileName: string) {
 
 		await this.unzipData(dataFileName);
 		await this.loadData();
 
 	}
 
-	private async unzipData(zipFileName: string) {
+	public async unzipData(zipFileName: string) {
 
 		await unzip(join(STATIC_DATA_DIR_PATH, zipFileName), STATIC_DATA_DIR_PATH);
 
 	}
 
-	private async loadData() {
+	public async loadData() {
 
 		const client: PoolClient =  await pool.connect();
 		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable, calendarDatesTable];

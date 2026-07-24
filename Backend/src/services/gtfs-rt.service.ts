@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 import { Service } from "../core/service.js";
 import type { TripUpdate, VehiclePosition } from "../types/gtfs.js";
 import { transit_realtime } from "../gtfs/gtfs-rt.js";
-import { EventName, GTFSApiService, type Entity } from "./gtfs-api.service.js";
 import { logger } from "../utils/logger.js";
 import { join } from "node:path";
 import { RT_DATA_DIR_PATH } from "../core/paths.js";
@@ -12,39 +11,7 @@ export class GTFSRtService extends Service {
 	private vehiclePositions: VehiclePosition[] = [];
 	private tripUpdates: TripUpdate[] = [];
 
-	protected constructor() {
-
-		super();
-
-		this.updateFeeds();
-		GTFSApiService.instance.events.on(EventName.EntityUpdated, (e: { entity: Entity }) => {
-
-			if (e.entity.type == "rt") {
-
-				if (e.entity.fileName == "vehiclePositions.pb") {
-
-					this.updateVehiclePositions();
-
-				} else if (e.entity.fileName == "tripUpdates.pb") {
-
-					this.updateTripUpdates();
-
-				}
-
-			}
-
-		});
-
-	}
-
-	private async updateFeeds() {
-
-		await this.updateVehiclePositions();
-		await this.updateTripUpdates();
-
-	}
-
-	private async updateVehiclePositions() {
+	public async updateVehiclePositions() {
 
 		let vehiclePositionsBuffer;
 
@@ -77,7 +44,7 @@ export class GTFSRtService extends Service {
 
 	}
 
-	private async updateTripUpdates() {
+	public async updateTripUpdates() {
 
 		let tripUpdatesBuffer;
 
