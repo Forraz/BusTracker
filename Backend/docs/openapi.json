@@ -513,6 +513,61 @@
         }
       }
     },
+    "/routes": {
+      "get": {
+        "operationId": "RouteApiSpec_get_/routes",
+        "tags": [
+          "Route"
+        ],
+        "summary": "Find Routes by name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/routes/{id}": {
       "get": {
         "operationId": "RouteApiSpec_get_/routes/{id}",

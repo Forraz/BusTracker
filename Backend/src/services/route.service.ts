@@ -1,4 +1,4 @@
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, eq, getTableColumns, like } from "drizzle-orm";
 import { Service } from "../core/service.js";
 import { db } from "../db/client.js";
 import { calendarDatesTable, routesTable, stopTimesTable, tripsTable, type Route } from "../db/schema.js";
@@ -8,6 +8,19 @@ import { StopService } from "./stop.service.js";
 
 
 export class RouteService extends Service {
+
+	async getRoutesByName(name: string, limit: number = 10): Promise<Route[]> {
+
+		const result = await db
+			.select()
+			.from(routesTable)
+			.where(
+				like(routesTable.routeLongName, `%${name}%`)
+			).limit(limit);
+
+		return result;
+
+	}
 
 	async getRouteById(id: string): Promise<Route> {
 

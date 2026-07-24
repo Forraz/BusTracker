@@ -6,6 +6,18 @@ import type { RouteDTO } from "../dto/route.dto.js";
 interface RouteSpec {
 	tags: [ "Route" ],
 	paths: {
+		"/routes": {
+			get: {
+				summary: "Find Routes by name",
+				query: {
+					name: string,
+					limit?: number
+				},
+				responses: {
+					200: RouteDTO[]
+				}
+			}
+		}, 
 		"/routes/{id}": {
 			get: {
 				summary: "Get Route by id",
