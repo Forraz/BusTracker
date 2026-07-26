@@ -29,9 +29,9 @@ export class RouteController extends Controller {
 
 	constructor(
 
-		private readonly routeService: RouteService = RouteService.instance,
-		private readonly vehicleService: VehicleService = VehicleService.instance,
-		private readonly stopService: StopService = StopService.instance
+		private routeService: RouteService,
+		private stopService: StopService,
+		private vehicleService: VehicleService
 
 	) {
 

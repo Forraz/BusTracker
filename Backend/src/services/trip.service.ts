@@ -1,41 +1,46 @@
-import { eq } from "drizzle-orm";
 import { Service } from "../core/service.js";
-import { db } from "../db/client.js";
-import { tripsTable, type Trip } from "../db/schema.js";
+import { type Trip } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
-import { RouteService } from "./route.service.js";
+import type { RouteRepository } from "../repositories/route.repository.js";
+import type { TripRepository } from "../repositories/trip.repository.js";
 
 
 export class TripService extends Service {
 
+	constructor(
+
+		private tripRepository: TripRepository,
+		private routeRepository: RouteRepository
+
+	) {
+
+		super();
+
+	}
+
 	async getTripById(id: string): Promise<Trip> {
+		
+		const stop = await this.tripRepository.getById(id);
 
-		const [result] = await db
-			.select()
-			.from(tripsTable)
-			.where(eq(tripsTable.id, id))
-
-		if (result == null) {
+		if (stop == null) {
 
 			throw new NotFoundError(`Trip ${id} not found`);
 
 		}
 
-		return result;
+		return stop;
 			
 	}
 
 	async getTripsByRouteId(routeId: string): Promise<Trip[]> {
 
-		const routeService: RouteService = RouteService.instance;
-		await routeService.getRouteById(routeId);
+		if (!await this.routeRepository.exists(routeId)) {
 
-		const result = await db
-			.select()
-			.from(tripsTable)
-			.where(eq(tripsTable.routeId, routeId));
+			throw new NotFoundError(`Route ${routeId} not found`);
 
-		return result;
+		}
+
+		return this.tripRepository.getByRouteId(routeId);
 
 	}
 

@@ -1,14 +1,14 @@
 import { Worker } from "../core/worker.js";
-import type { GTFSApiService } from "../services/gtfs-api.service.js";
+import type { GTFSUpdater } from "../gtfs/gtfs.updater.js";
 
 
-export class GTFSApiWorker extends Worker {
+export class GTFSUpdateWorker extends Worker {
 
 	private timers: NodeJS.Timeout[] = [];
 
 	constructor(
 
-		private apiService: GTFSApiService
+		private updater: GTFSUpdater
 
 	) {
 
@@ -16,17 +16,21 @@ export class GTFSApiWorker extends Worker {
 
 	}
 
-	public start() {
+	public async start() {
 
+		await this.updater.init();
+
+		this.updater.updateRtData();
 		this.timers.push(setInterval(() => {
 
-			this.apiService.updateRtData();
+			this.updater.updateRtData();
 
 		}, 5 * 1000));
 
+		this.updater.updateStaticData();
 		this.timers.push(setInterval(() => {
 
-			this.apiService.updateStaticData();
+			this.updater.updateStaticData();
 
 		}, 60 * 60 * 1000));
 

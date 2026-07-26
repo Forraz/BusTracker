@@ -1,67 +1,52 @@
-import { and, eq, getTableColumns, like } from "drizzle-orm";
 import { Service } from "../core/service.js";
-import { db } from "../db/client.js";
-import { calendarDatesTable, routesTable, stopTimesTable, tripsTable, type Route } from "../db/schema.js";
+import { type Route } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
-import { today } from "../utils/gtfs-time.js";
-import { StopService } from "./stop.service.js";
+import type { RouteRepository } from "../repositories/route.repository.js";
+import type { StopRepository } from "../repositories/stop.repository.js";
 
 
 export class RouteService extends Service {
 
+	constructor(
+		
+		private routeRepository: RouteRepository,
+		private stopRepository: StopRepository
+
+	) {
+
+		super();
+
+	}
+
 	async getRoutesByName(name: string, limit: number = 10): Promise<Route[]> {
 
-		const result = await db
-			.select()
-			.from(routesTable)
-			.where(
-				like(routesTable.routeLongName, `%${name}%`)
-			).limit(limit);
-
-		return result;
+		return this.routeRepository.getByName(name, limit);
 
 	}
 
 	async getRouteById(id: string): Promise<Route> {
 
-		const [result] = await db
-			.select()
-			.from(routesTable)
-			.where(eq(routesTable.id, id));
+		const route = await this.routeRepository.getById(id);
 
-		if (result == null) {
+		if (route == null) {
 
 			throw new NotFoundError(`Route ${id} not found`);
 
 		}
 
-		return result;
+		return route;
 
 	} 
 
 	async getRoutesByStopId(stopId: string): Promise<Route[]> {
 
-		const stopService: StopService = StopService.instance;
-		await stopService.getStopById(stopId);
+		if (!await this.stopRepository.exists(stopId)) {
 
-		const date = today();
+			throw new NotFoundError(`Stop ${stopId} not found`);
 
-		const result = await db
-			.selectDistinct({
-				...getTableColumns(routesTable)
-			})
-			.from(tripsTable)
-			.innerJoin(stopTimesTable, eq(stopTimesTable.tripId, tripsTable.id))
-			.innerJoin(calendarDatesTable, eq(calendarDatesTable.id, tripsTable.serviceId))
-			.innerJoin(routesTable, eq(routesTable.id, tripsTable.routeId))
-			.where(
-				and(	
-					eq(stopTimesTable.stopId, stopId),
-					eq(calendarDatesTable.date, date)
-				)
-			);
+		}
 
-		return result;
+		return this.routeRepository.getByStopId(stopId);
 
 	}
 

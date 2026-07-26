@@ -1,122 +1,66 @@
 import { Service } from "../core/service.js";
-import type { Coordinates } from "../types/coordinates.js";
-import { db } from "../db/client.js";
-import { stopsTable, stopTimesTable, tripsTable, type Stop } from "../db/schema.js";
+import { type Stop } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
-import { and, between, eq, getTableColumns, like } from "drizzle-orm";
-import { RouteService } from "./route.service.js";
-import { TripService } from "./trip.service.js";
-import { logger } from "../utils/logger.js";
+import type { RouteRepository } from "../repositories/route.repository.js";
+import type { StopRepository } from "../repositories/stop.repository.js";
+import type { TripRepository } from "../repositories/trip.repository.js";
 
 export class StopService extends Service {
 
-	async getStopsByName(name: string, limit: number = 10): Promise<Stop[]> {
+	constructor(
 
-		const result = await db
-		.select()
-		.from(stopsTable)
-		.where(
-			like(stopsTable.stopName, `%${name}%`)
-		).limit(limit);
+		private stopRepository: StopRepository,
+		private routeRepository: RouteRepository,
+		private tripRepository: TripRepository
 
-		return result;
+
+	) {
+
+		super();
 
 	}
 
-	async getNearestStopsByPosition(position: Coordinates, limit: number = 10, radius: number = 0.15) {
+	async getStopsByName(name: string, limit: number = 10): Promise<Stop[]> {
 
-		const minCoordinates: Coordinates = { lat: position.lat-radius/2, lon: position.lon-radius/2 };
-		const maxCoordinates: Coordinates = { lat: position.lat+radius/2, lon: position.lon+radius/2 };
-
-		const result = await db
-			.select()
-			.from(stopsTable)
-			.where(
-				and(
-					between(stopsTable.stopLat, minCoordinates.lat, maxCoordinates.lat),
-					between(stopsTable.stopLon, minCoordinates.lon, maxCoordinates.lon)
-				)
-			).limit(limit);
-
-		result.sort((a, b) => {
-
-			const aCoordinates: Coordinates = { lat: a.stopLat!, lon: a.stopLon! };
-			const bCoordinates: Coordinates = { lat: b.stopLat!, lon: b.stopLon! };
-
-			const aDistance = this.getSquaredDistance(position, aCoordinates);
-			const bDistance = this.getSquaredDistance(position, bCoordinates);
-
-			return aDistance - bDistance;
-
-		});
-
-		return result;
+		return this.stopRepository.getByName(name, limit);
 
 	}
 
 	async getStopById(id: string): Promise<Stop> {
 
-		const [result] = await db
-			.select()
-			.from(stopsTable)
-			.where(eq(stopsTable.id, id))
+		const stop = await this.stopRepository.getById(id);
 
-		if (result == null) {
+		if (stop == null) {
 
 			throw new NotFoundError(`Stop ${id} not found`);
 
 		}
 
-		return result;
+		return stop;
 
 	}
 
 	async getStopsByRouteId(routeId: string) {
 
-		const routeService: RouteService = RouteService.instance;
-		await routeService.getRouteById(routeId);
+		if (!await this.routeRepository.exists(routeId)) {
 
-		const stops: Stop[] = await db
-			.selectDistinct({
-				...getTableColumns(stopsTable)
-			})
-			.from(stopTimesTable)
-			.innerJoin(stopsTable, eq(stopTimesTable.stopId, stopsTable.id))
-			.innerJoin(tripsTable, eq(stopTimesTable.tripId, tripsTable.id))
-			.where(
-				eq(tripsTable.routeId, routeId)
-			)
+			throw new NotFoundError(`Route ${routeId} not found`);
 
-		return stops;
+		}
+
+		return this.stopRepository.getByRouteId(routeId);
 
 	}
 
 	async getStopsByTripId(tripId: string): Promise<Stop[]> {
 
-		const tripService: TripService = TripService.instance;
-		await tripService.getTripById(tripId);
+		if (!await this.tripRepository.exists(tripId)) {
 
-		const stops: Stop[] = await db
-			.select({
-				...getTableColumns(stopsTable)
-			})
-			.from(stopTimesTable)
-			.innerJoin(stopsTable, eq(stopTimesTable.stopId, stopsTable.id))
-			.innerJoin(tripsTable, eq(stopTimesTable.tripId, tripsTable.id))
-			.where(
-				eq(tripsTable.id, tripId)
-			)
+			throw new NotFoundError(`Trip ${tripId} not found`);
 
-		return stops;
+		}
 
-
-	}
-
-	private getSquaredDistance(lPosition: Coordinates, rPosition: Coordinates): number {
-
-		const squaredDistance = Math.pow(rPosition.lat - lPosition.lat, 2) + Math.pow(rPosition.lon - lPosition.lon, 2);
-
-		return squaredDistance;
+		return this.stopRepository.getByTripId(tripId);
 
 	}
 

@@ -28,8 +28,8 @@ export class StopController extends Controller {
 
 	constructor(
 
-		private readonly stopService: StopService = StopService.instance,
-		private readonly routeService: RouteService = RouteService.instance
+		private readonly stopService: StopService,
+		private readonly routeService: RouteService
 
 	) {
 

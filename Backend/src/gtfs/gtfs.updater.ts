@@ -3,7 +3,6 @@ import { readFile } from "node:fs/promises";
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
-import { Service } from "../core/service.js";
 import { logger } from "../utils/logger.js";
 import { DATA_DIR_PATH, INDEX_FILE_PATH, RT_DATA_DIR_PATH, STATIC_DATA_DIR_PATH } from "../core/paths.js";
 
@@ -22,7 +21,7 @@ export enum EventName {
 
 }
 
-export class GTFSApiService extends Service {
+export class GTFSUpdater {
 
 	private API_URL = "https://gtfs.ovapi.nl/nl";
 
@@ -35,21 +34,14 @@ export class GTFSApiService extends Service {
 
 	private STATIC_SYNC_URLS: string[] = [
 
-		`${this.API_URL}/gtfs-nl.zip`,
+		// `${this.API_URL}/gtfs-nl.zip`
+		"http://localhost:8082/gtfs-nl.zip"
 
 	];
 
 	entities: Entity[] = [];
 	events: EventEmitter = new EventEmitter();
 	
-	protected constructor() {
-
-		super();
-
-		this.init();
-
-	}
-
 	async init() {
 
 		await this.initializeIndex();

@@ -25,10 +25,10 @@ export class TripController extends Controller {
 
 	constructor(
 
-		private readonly tripService: TripService = TripService.instance,
-		private readonly vehicleService: VehicleService = VehicleService.instance,
-		private readonly shapeService: ShapeService = ShapeService.instance,
-		private readonly stopService: StopService = StopService.instance
+		private readonly tripService: TripService,
+		private readonly vehicleService: VehicleService,
+		private readonly shapeService: ShapeService,
+		private readonly stopService: StopService
 
 	) {
 

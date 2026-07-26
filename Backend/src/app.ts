@@ -1,49 +1,184 @@
 import "dotenv/config";
-import express from "express"
+import { type Express }  from "express";
+import express from "express";
 import swaggerUI from "swagger-ui-express";
 
-import { stopRouter } from "./routers/stop.router.js";
-import { GTFSApiService } from "./services/gtfs-api.service.js";
-import { tripRouter } from "./routers/trip.router.js";
 import { handleErrors } from "./middleware/handleErrors.js";
-import { routeRouter } from "./routers/route.router.js";
-import { shapeRouter } from "./routers/shape.router.js";
 import { logger } from "./utils/logger.js";
+import { Database } from "./db/client.js";
+
 import openapi from "../docs/openapi.json" with { type: "json" };
-import { GTFSImportWorker } from "./workers/gtfs-import.worker.js";
+
+import type { Worker } from "./core/worker.js";
 import { GTFSRtWorker } from "./workers/gtfs-rt.worker.js";
-import { GTFSApiWorker } from "./workers/gtfs-api.worker.js";
-import { GTFSRtService } from "./services/gtfs-rt.service.js";
-import { GTFSImportService } from "./services/gtfs-import.service.js";
+import { GTFSImportWorker } from "./workers/gtfs-import.worker.js";
+import { GTFSUpdateWorker } from "./workers/gtfs-updater.worker.js";
+
+import { StopRepository } from "./repositories/stop.repository.js";
+import { TripRepository } from "./repositories/trip.repository.js";
+import { RouteRepository } from "./repositories/route.repository.js";
+import { VehicleRepository } from "./repositories/vehicle.repository.js";
+import { ShapeRepository } from "./repositories/shape.repository.js";
+
+import { StopService } from "./services/stop.service.js";
+import { TripService } from "./services/trip.service.js";
+import { RouteService } from "./services/route.service.js";
+import { VehicleService } from "./services/vehicle.service.js";
+import { ShapeService } from "./services/shape.service.js";
+
+import { StopController } from "./controllers/stop.controller.js";
+import { RouteController } from "./controllers/route.controller.js";
+import { ShapeController } from "./controllers/shape.controller.js";
+import { TripController } from "./controllers/trip.controller.js";
+
+import { createStopRouter } from "./routers/stop.router.js";
+import { createRouteRouter } from "./routers/route.router.js";
+import { createShapeRouter } from "./routers/shape.router.js";
+import { createTripRouter } from "./routers/trip.router.js";
+
+import { GTFSUpdater } from "./gtfs/gtfs.updater.js";
+import { GTFSImporter } from "./gtfs/gtfs.importer.js";
+import { type GTFSRtProvider } from "./gtfs/gtfs-rt.store.js";
 
 
-const app = express();
-const port = 3000;
+export class App {
 
-const gtfsApiService: GTFSApiService = GTFSApiService.instance;
-const gtfsApiWorker = new GTFSApiWorker(gtfsApiService);
-gtfsApiWorker.start();
+	private workers: Worker[] = [];
+	public app: Express;
 
-const gtfsRtService: GTFSRtService = GTFSRtService.instance;
-console.log(gtfsRtService);
-const gtfsRtWorker = new GTFSRtWorker(gtfsRtService, gtfsApiService.events);
-gtfsRtWorker.start();
+	constructor(
 
-const gtfsImportService: GTFSImportService = GTFSImportService.instance;
-const gtfsImportWorker = new GTFSImportWorker(gtfsImportService, gtfsApiService.events);
-gtfsImportWorker.start();
+		database: Database,
+		gtfsRtProvider: GTFSRtProvider,
+		private port: number = 3000
 
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(openapi));
-app.use("/api/stops", stopRouter);
-app.use("/api/trips", tripRouter);
-app.use("/api/routes", routeRouter);
-app.use("/api/shapes", shapeRouter);
-app.use(handleErrors);
+	) {
 
-app.listen(port, () => {
+		const stopRepository = new StopRepository(database);
+		const tripRepository = new TripRepository(database);
+		const routeRepository = new RouteRepository(database);
+		const vehicleRepository = new VehicleRepository(database, gtfsRtProvider);
+		const shapeRepository = new ShapeRepository(database);
+		
+		const stopService = new StopService(
 
-	logger.info(`Listening on port ${port}`);
+			stopRepository,
+			routeRepository,
+			tripRepository
 
-});
+		);
+
+		const tripService = new TripService(
+
+			tripRepository,
+			routeRepository
+
+		);
+
+		const routeService = new RouteService(
+
+			routeRepository,
+			stopRepository
+
+		);
+
+		const vehicleService = new VehicleService(
+
+			vehicleRepository,
+			tripRepository,
+			routeRepository
+
+		);
+
+		const shapeService = new ShapeService(
+			
+			shapeRepository,
+			tripRepository
+
+		);
+
+		const stopController = new StopController(
+
+			stopService,
+			routeService
+
+		);
+
+		const tripController = new TripController(
+
+			tripService,
+			vehicleService,
+			shapeService,
+			stopService
+
+		);
+
+		const routeController = new RouteController(
+
+			routeService,
+			stopService,
+			vehicleService
+
+		);
+
+		const shapeController = new ShapeController(
+
+			shapeService
+
+		);
+
+		const stopRouter = createStopRouter(stopController);
+		const tripRouter = createTripRouter(tripController);
+		const routeRouter = createRouteRouter(routeController);
+		const shapeRouter = createShapeRouter(shapeController);
+
+		const gtfsUpdater = new GTFSUpdater();
+		const gtfsUpdateWorker = new GTFSUpdateWorker(gtfsUpdater);
+		this.workers.push(gtfsUpdateWorker);
+
+		const gtfsRtWorker = new GTFSRtWorker(gtfsRtProvider, gtfsUpdater.events);
+		this.workers.push(gtfsRtWorker);
+
+		const gtfsImporter = new GTFSImporter(database);
+		const gtfsImportWorker = new GTFSImportWorker(gtfsImporter, gtfsUpdater.events);
+		this.workers.push(gtfsImportWorker);
+
+		this.app = express();
+
+		this.app.use("/docs", swaggerUI.serve, swaggerUI.setup(openapi));
+		this.app.use("/api/stops", stopRouter);
+		this.app.use("/api/trips", tripRouter);
+		this.app.use("/api/routes", routeRouter);
+		this.app.use("/api/shapes", shapeRouter);
+		this.app.use(handleErrors);
+
+
+	}
+
+	start() {
+
+		this.startWorkers();
+
+		this.app.listen(this.port, () => {
+
+			logger.info(`Listening on port ${this.port}`);
+
+		});
+
+	}
+
+	startWorkers() {
+
+		this.workers.forEach(w => w.start());
+
+	}
+
+	stopWorkers() {
+
+		this.workers.forEach(w => w.stop());
+
+	}
+
+}
 
 

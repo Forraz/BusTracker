@@ -1,45 +1,46 @@
-import { eq, getTableColumns } from "drizzle-orm";
 import { Service } from "../core/service.js";
-import { db } from "../db/client.js";
-import { shapesTable, tripsTable, type Shape } from "../db/schema.js";
+import { type Shape } from "../db/schema.js";
 import { NotFoundError } from "../errors/errors.js";
-import { TripService } from "./trip.service.js";
+import type { ShapeRepository } from "../repositories/shape.repository.js";
+import type { TripRepository } from "../repositories/trip.repository.js";
 
 
 export class ShapeService extends Service {
 
+	constructor(
+
+		private shapeRepository: ShapeRepository,
+		private tripRepository: TripRepository
+
+	) {
+
+		super();
+
+	}
+
 	async getShapeById(id: string): Promise<Shape[]> {
 
-		const result = await db
-			.select()
-			.from(shapesTable)
-			.where(eq(shapesTable.id, id));
+		const shape = await this.getShapeById(id);
 
-		if (result.length == 0) {
+		if (shape == null) {
 
 			throw new NotFoundError(`Shape ${id} not found`);
 
 		}
 
-		return result;
+		return shape;
 
 	}
 
 	async getShapeByTripId(tripId: string): Promise<Shape[]> {
+		
+		if (!await this.tripRepository.exists(tripId)) {
 
-		const tripService: TripService = TripService.instance;
-		await tripService.getTripById(tripId);
+			throw new NotFoundError(`Trip ${tripId} not found`);
 
-		const result = await db
-			.select({
-				...getTableColumns(shapesTable)
-			})
-			.from(shapesTable)
-			.innerJoin(tripsTable, eq(shapesTable.id, tripsTable.shapeId))
-			.where(eq(tripsTable.id, tripId));
-
-		return result;
-
+		}
+		
+		return this.shapeRepository.getByTripId(tripId);
 
 	}
 }

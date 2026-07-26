@@ -1,14 +1,14 @@
 import type EventEmitter from "events";
 import { Worker } from "../core/worker.js";
-import { EventName, type Entity } from "../services/gtfs-api.service.js";
-import { GTFSRtService } from "../services/gtfs-rt.service.js";
+import { type Entity, EventName } from "../gtfs/gtfs.updater.js";
+import { type GTFSRtProvider } from "../gtfs/gtfs-rt.store.js";
 
 
 export class GTFSRtWorker extends Worker {
 
 	constructor(
 
-		private rtService: GTFSRtService,
+		private rtProvider: GTFSRtProvider,
 		private eventEmitter: EventEmitter
 
 	) {
@@ -35,11 +35,11 @@ export class GTFSRtWorker extends Worker {
 
 			if (event.entity.fileName == "vehiclePositions.pb") {
 
-				this.rtService.updateVehiclePositions();
+				this.rtProvider.updateVehiclePositions();
 
 			} else if (event.entity.fileName == "tripUpdates.pb") {
 
-				this.rtService.updateTripUpdates();
+				this.rtProvider.updateTripUpdates();
 
 			}
 

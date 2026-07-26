@@ -2,11 +2,15 @@ import { Router } from "express";
 import { RouteController } from "../controllers/route.controller.js";
 
 
-export const routeRouter = Router();
+export function createRouteRouter(routeController: RouteController) {
 
-const routeController: RouteController = RouteController.instance;
+	const routeRouter = Router();
 
-routeRouter.get("/", routeController.handleFindRoutes.bind(routeController));
-routeRouter.get("/:id", routeController.handleGetRouteById.bind(routeController));
-routeRouter.get("/:id/stops", routeController.handleGetStopsByRouteId.bind(routeController));
-routeRouter.get("/:id/vehicles", routeController.handleGetVehiclesByRouteId.bind(routeController));
+	routeRouter.get("/", routeController.handleFindRoutes.bind(routeController));
+	routeRouter.get("/:id", routeController.handleGetRouteById.bind(routeController));
+	routeRouter.get("/:id/stops", routeController.handleGetStopsByRouteId.bind(routeController));
+	routeRouter.get("/:id/vehicles", routeController.handleGetVehiclesByRouteId.bind(routeController));
+
+	return routeRouter;
+
+}

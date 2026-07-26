@@ -16,7 +16,7 @@ export class ShapeController extends Controller {
 
 	constructor(
 
-		private readonly shapeService: ShapeService = ShapeService.instance,
+		private readonly shapeService: ShapeService,
 
 	) {
 

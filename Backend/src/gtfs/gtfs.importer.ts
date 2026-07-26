@@ -6,15 +6,23 @@ import { join } from "node:path";
 import type { PoolClient } from "pg";
 import { getTableName } from "drizzle-orm";
 
-import { Service } from "../core/service.js"; 
 import { STATIC_DATA_DIR_PATH } from "../core/paths.js";
 
-import { pool } from "../db/client.js";
 import { calendarDatesTable, routesTable, shapesTable, stopsTable, stopTimesTable, tripsTable } from "../db/schema.js";
 import { unzip } from "../utils/unzip.js";
 import { logger } from "../utils/logger.js";
+import type { Database } from "../db/client.js";
 
-export class GTFSImportService extends Service {
+export class GTFSImporter {
+
+	constructor(
+
+		private database: Database
+
+	) {
+
+
+	}
 
 	public async updateData(dataFileName: string) {
 
@@ -31,7 +39,7 @@ export class GTFSImportService extends Service {
 
 	public async loadData() {
 
-		const client: PoolClient =  await pool.connect();
+		const client: PoolClient =  await this.database.pool.connect();
 		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable, calendarDatesTable];
 
 		try {

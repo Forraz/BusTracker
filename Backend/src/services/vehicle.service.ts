@@ -1,20 +1,35 @@
 import { Service } from "../core/service.js";
 import type { VehiclePosition } from "../types/gtfs.js";
 import type { Trip } from "../db/schema.js";
-import { GTFSRtService } from "./gtfs-rt.service.js";
-import { TripService } from "./trip.service.js";
 import { NotFoundError } from "../errors/errors.js";
-import { RouteService } from "./route.service.js";
+import type { VehicleRepository } from "../repositories/vehicle.repository.js";
+import type { TripRepository } from "../repositories/trip.repository.js";
+import type { RouteRepository } from "../repositories/route.repository.js";
 
 export class VehicleService extends Service {
 
+	constructor(
+
+		private vehicleRepository: VehicleRepository,
+		private tripRepository: TripRepository,
+		private routeRepository: RouteRepository
+
+	) {
+
+		super();
+
+	}
+
 	async getVehiclesByRouteId(routeId: string): Promise<VehiclePosition[]> {
 
-		const tripService: TripService = TripService.instance;
-		const trips = await tripService.getTripsByRouteId(routeId);
+		
+		if(!await this.routeRepository.exists(routeId)) {
 
-		const routeService: RouteService = RouteService.instance;
-		await routeService.getRouteById(routeId);
+			throw new NotFoundError(`Route ${routeId} not found`);
+
+		}
+		
+		const trips = await this.tripRepository.getByRouteId(routeId);
 
 		const vehicles = this.filterVehiclesByTrips(trips);
 
@@ -24,32 +39,19 @@ export class VehicleService extends Service {
 
 	filterVehiclesByTrips(trips: Trip[]): VehiclePosition[] {
 
-		const gtfGTFSRtService: GTFSRtService = GTFSRtService.instance;
-		const vehiclePositions: VehiclePosition[] = gtfGTFSRtService.getVehiclePositions();
-
-		const tripIds = trips.map((t) => t.id.toString());
-
-		const filteredVehicles = vehiclePositions.filter((v) => {
-
-			if (!v.trip || !v.trip.tripId) { return false; }
-			
-			return tripIds.includes(v.trip.tripId);
-
-		});
-
-		return filteredVehicles;
+		return this.vehicleRepository.filterByTrips(trips);
 
 	}
 
-	async getVehicleByTripId(id: string): Promise<VehiclePosition> {
+	async getVehicleByTripId(tripId: string): Promise<VehiclePosition> {
 
-		const gtfGTFSRtService: GTFSRtService = GTFSRtService.instance;
-		const vehiclePositions: VehiclePosition[] = gtfGTFSRtService.getVehiclePositions();
+		if(!await this.tripRepository.exists(tripId)) {
 
-		const tripService: TripService = TripService.instance;
-		await tripService.getTripById(id);
+			throw new NotFoundError(`Trip ${tripId} not found`);
 
-		const vehicle = vehiclePositions.find((v) => v.trip?.tripId === id);
+		}
+
+		const vehicle = this.vehicleRepository.getByTripId(tripId);
 
 		if (vehicle == null) {
 

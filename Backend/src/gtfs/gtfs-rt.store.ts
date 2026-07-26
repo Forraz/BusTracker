@@ -1,12 +1,21 @@
 import { readFile } from "node:fs/promises";
-import { Service } from "../core/service.js";
 import type { TripUpdate, VehiclePosition } from "../types/gtfs.js";
-import { transit_realtime } from "../gtfs/gtfs-rt.js";
+import { transit_realtime } from "./generated/gtfs-rt.js";
 import { logger } from "../utils/logger.js";
 import { join } from "node:path";
 import { RT_DATA_DIR_PATH } from "../core/paths.js";
 
-export class GTFSRtService extends Service {
+export interface GTFSRtProvider {
+
+	getVehiclePositions(): VehiclePosition[]
+	getTripUpdates(): TripUpdate[]
+
+	updateVehiclePositions(): void
+	updateTripUpdates(): void
+
+}
+
+export class GTFSRtStore {
 
 	private vehiclePositions: VehiclePosition[] = [];
 	private tripUpdates: TripUpdate[] = [];
