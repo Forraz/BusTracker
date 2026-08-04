@@ -1,4 +1,4 @@
-import { transit_realtime } from "../gtfs/gtfs-rt.js";
+import { transit_realtime } from "../gtfs/generated/gtfs-rt.js";
 
 export type FeedEntity = transit_realtime.FeedEntity;
 export type FeedMessage = transit_realtime.FeedMessage;
