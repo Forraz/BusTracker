@@ -8,11 +8,17 @@ export class Database {
 	public readonly pool: Pool
 	public readonly db: NodePgDatabase
 
-	constructor() {
+	constructor(connectionString: string = "") {
+
+		if (connectionString === "") {
+
+			connectionString = process.env.DATABASE_URL ?? "";
+
+		}
 
 		this.pool = new Pool({
 
-			connectionString: process.env.DATABASE_URL
+			connectionString: connectionString
 
 		});
 
@@ -21,3 +27,4 @@ export class Database {
 	}
 
 }
+

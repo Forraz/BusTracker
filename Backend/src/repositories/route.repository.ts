@@ -40,20 +40,16 @@ export class RouteRepository extends Repository {
 
 	async getByStopId(stopId: string): Promise<Route[]> {
 
-		const date = today();
-
 		const result = await this.database.db
 			.selectDistinct({
 				...getTableColumns(routesTable)
 			})
 			.from(tripsTable)
 			.innerJoin(stopTimesTable, eq(stopTimesTable.tripId, tripsTable.id))
-			.innerJoin(calendarDatesTable, eq(calendarDatesTable.id, tripsTable.serviceId))
 			.innerJoin(routesTable, eq(routesTable.id, tripsTable.routeId))
 			.where(
 				and(	
 					eq(stopTimesTable.stopId, stopId),
-					eq(calendarDatesTable.date, date)
 				)
 			);
 

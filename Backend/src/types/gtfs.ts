@@ -4,7 +4,7 @@ export type FeedEntity = transit_realtime.FeedEntity;
 export type FeedMessage = transit_realtime.FeedMessage;
 export type FeedHeader = transit_realtime.FeedHeader;
 
-export type VehiclePosition = transit_realtime.VehiclePosition;
+export type VehiclePosition = transit_realtime.IVehiclePosition;
 export type TripDescriptor = transit_realtime.TripDescriptor;
 export type Position = transit_realtime.Position;
 export type VehicleDescriptor = transit_realtime.VehicleDescriptor;
