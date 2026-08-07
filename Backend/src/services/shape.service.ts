@@ -20,7 +20,7 @@ export class ShapeService extends Service {
 
 	async getShapeById(id: string): Promise<Shape[]> {
 
-		const shape = await this.getShapeById(id);
+		const shape = await this.shapeRepository.getById(id);
 
 		if (shape == null) {
 
