@@ -51,7 +51,7 @@ export class VehicleService extends Service {
 
 		}
 
-		const vehicle = this.vehicleRepository.getByTripId(tripId);
+		const vehicle = await this.vehicleRepository.getByTripId(tripId);
 
 		if (vehicle == null) {
 
