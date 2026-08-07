@@ -145,7 +145,7 @@ export class App {
 
 		this.app = express();
 
-		this.app.use("/docs", swaggerUI.serve, swaggerUI.setup(openapi));
+		this.app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(openapi));
 		this.app.use("/api/stops", stopRouter);
 		this.app.use("/api/trips", tripRouter);
 		this.app.use("/api/routes", routeRouter);
