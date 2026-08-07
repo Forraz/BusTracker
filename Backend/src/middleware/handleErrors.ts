@@ -5,13 +5,19 @@ import { logger } from "../utils/logger.js";
 
 export function handleErrors(err: Error, req: Request, res: Response, next: NextFunction) {
 
-	let message = err.message;
+	let message;
 	let status;
 
 	if (err instanceof HttpError) {
 
-		status = err.status
+		status = err.status;
+		message = err.message;
 
+	} else if (err instanceof URIError) {
+
+		status = 400;
+		message = "Bad Request";
+		
 	} else {
 
 		status = 500;
