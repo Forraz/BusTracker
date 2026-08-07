@@ -1,4 +1,4 @@
-import { and, eq, getTableColumns, like } from "drizzle-orm";
+import { and, eq, getTableColumns, ilike, like } from "drizzle-orm";
 import { Repository } from "../core/repository.js";
 import { calendarDatesTable, routesTable, stopTimesTable, tripsTable, type Route } from "../db/schema.js";
 import { today } from "../utils/gtfs-time.js";
@@ -31,7 +31,7 @@ export class RouteRepository extends Repository {
 			.select()
 			.from(routesTable)
 			.where(
-				like(routesTable.routeLongName, `%${name}%`)
+				ilike(routesTable.routeLongName, `%${name}%`)
 			).limit(limit);
 
 		return result;

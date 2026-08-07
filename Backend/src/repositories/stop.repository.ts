@@ -1,4 +1,4 @@
-import { eq, getTableColumns, like } from "drizzle-orm";
+import { eq, getTableColumns, ilike, like } from "drizzle-orm";
 import { Repository } from "../core/repository.js";
 import { stopsTable, stopTimesTable, tripsTable, type Stop } from "../db/schema.js";
 
@@ -35,7 +35,7 @@ export class StopRepository extends Repository {
 			.select()
 			.from(stopsTable)
 			.where(
-				like(stopsTable.stopName, `%${name}%`)
+				ilike(stopsTable.stopName, `%${name}%`)
 			).limit(limit);
 
 		return result;
