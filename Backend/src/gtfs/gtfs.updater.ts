@@ -34,8 +34,8 @@ export class GTFSUpdater {
 
 	private STATIC_SYNC_URLS: string[] = [
 
-		// `${this.API_URL}/gtfs-nl.zip`
-		"http://localhost:8082/gtfs-nl.zip"
+		`${this.API_URL}/gtfs-nl.zip`
+		// "http://localhost:8082/gtfs-nl.zip"
 
 	];
 
