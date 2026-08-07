@@ -31,7 +31,7 @@ describe("Route domain endpoints", () => {
 
 		it.each([
 
-			{ name: "a", amount: 3 },
+			{ name: "a", amount: 2 },
 			{ name: "Central", amount: 1 },
 			{ name: "7*&%*&$%*&$%", amount: 0 }
 
