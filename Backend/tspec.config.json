@@ -6,7 +6,7 @@
 	"outputPath": "./docs/openapi.json",
 	"specVersion": 3,
 	"openapi": {
-		"title": "BusTracker APPI",
+		"title": "BusTracker API",
 		"version": "1.0.0",
 		"servers": [{
 			"url": "/api"
