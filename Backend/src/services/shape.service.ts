@@ -40,7 +40,15 @@ export class ShapeService extends Service {
 
 		}
 		
-		return this.shapeRepository.getByTripId(tripId);
+		const shape = await this.shapeRepository.getByTripId(tripId);
+
+		if (shape == null) {
+
+			throw new NotFoundError(`Shape not found`);
+
+		}
+
+		return shape;
 
 	}
 }

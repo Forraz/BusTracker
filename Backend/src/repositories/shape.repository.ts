@@ -24,7 +24,7 @@ export class ShapeRepository extends Repository {
 
 	}
 
-	async getByTripId(tripId: string): Promise<Shape[]> {
+	async getByTripId(tripId: string): Promise<Shape[] | null> {
 
 		const result = await this.database.db
 			.select({
@@ -34,7 +34,7 @@ export class ShapeRepository extends Repository {
 			.innerJoin(tripsTable, eq(shapesTable.id, tripsTable.shapeId))
 			.where(eq(tripsTable.id, tripId));
 
-		return result;
+		return result.length != 0 ? result : null;
 
 	}
 
