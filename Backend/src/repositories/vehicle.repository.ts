@@ -42,7 +42,7 @@ export class VehicleRepository extends Repository {
 
 		const vehicle = vehiclePositions.find((v) => v.trip?.tripId === id);
 
-		return vehicle;
+		return vehicle ? vehicle : null;
 
 	}
 
