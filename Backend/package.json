@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest --reporter verbose | pino-pretty",
     "dev": "tsx watch ./src/index.ts | pino-pretty",
-    "docs": "tspec generate"
+    "docs": "tspec generate",
+	"check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
