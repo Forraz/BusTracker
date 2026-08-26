@@ -1,12 +1,12 @@
 <script setup lang="ts">
-	import "./assets/styles.css"
+
+	import "./assets/styles.css";
+	import Map from "./components/Map.vue";
+
 </script>
 
 <template>
-  <h1>You did it!</h1>
-  <div class="bg-amber-50">
-	  <p>test</p>
-  </div>
+	<Map />
 </template>
 
 <style scoped></style>
