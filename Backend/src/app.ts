@@ -2,6 +2,7 @@ import "dotenv/config";
 import { type Express }  from "express";
 import express from "express";
 import swaggerUI from "swagger-ui-express";
+import cors from "cors";
 
 import { handleErrors } from "./middleware/handleErrors.js";
 import { logger } from "./utils/logger.js";
@@ -145,6 +146,7 @@ export class App {
 
 		this.app = express();
 
+		this.app.use(cors());
 		this.app.use("/api/docs", swaggerUI.serve, swaggerUI.setup(openapi));
 		this.app.use("/api/stops", stopRouter);
 		this.app.use("/api/trips", tripRouter);
