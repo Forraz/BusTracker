@@ -1,27 +1,35 @@
 import { ApiService, HTTPMethod } from "../api";
+import { RoutesResponseSchema, StopResponseSchema, StopsResponseSchema, type Route, type Stop } from "../schema";
 
 const stopService  = {
 
 	resource: 'stops',
 
-	async query(params: URLSearchParams) {
+	async query(params: URLSearchParams): Promise<Stop[] | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}?${params.toString()}`);
-		return data;
+		const parsedData = StopsResponseSchema.parse(data).stops;
+
+		return parsedData;
 
 	},
 
-	async getById(id: string) {
+	async getById(id: string): Promise<Stop | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/`);
-		return data;
+		const parsedData = StopResponseSchema.parse(data).stop;
+
+
+		return parsedData;
 
 	},
 
-	async getRoutesById(id: string) {
+	async getRoutesById(id: string): Promise<Route[] | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/routes`);
-		return data;
+		const parsedData = RoutesResponseSchema.parse(data).routes;
+
+		return parsedData;
 
 	}
 

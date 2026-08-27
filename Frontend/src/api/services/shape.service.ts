@@ -1,13 +1,16 @@
 import { ApiService, HTTPMethod } from "../api";
+import { ShapeResponseSchema, type Shape } from "../schema";
 
 const shapeService  = {
 
 	resource: 'shapes',
 
-	async getById(id: string) {
+	async getById(id: string): Promise<Shape | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/`);
-		return data;
+		const parsedData = ShapeResponseSchema.parse(data).shape;
+
+		return parsedData;
 
 	},
 

@@ -1,34 +1,43 @@
 import { ApiService, HTTPMethod } from "../api";
+import { ShapeResponseSchema, StopsResponseSchema, TripResponseSchema, VehicleResponseSchema, type Shape, type Stop, type Trip, type Vehicle } from "../schema";
 
 const tripService  = {
 
 	resource: 'trips',
 
-	async getById(id: string) {
+	async getById(id: string): Promise<Trip | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/`);
-		return data;
+		const parsedData = TripResponseSchema.parse(data).trip;
+
+		return parsedData;
 
 	},
 
-	async getVehicleById(id: string) {
+	async getVehicleById(id: string): Promise<Vehicle | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/vehicle`);
-		return data;
+		const parsedData = VehicleResponseSchema.parse(data).vehicle;
+
+		return parsedData;
 
 	},
 
-	async getShapeById(id: string) {
+	async getShapeById(id: string): Promise<Shape | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/shape`);
-		return data;
+		const parsedData = ShapeResponseSchema.parse(data).shape;
+
+		return parsedData;
 
 	},
 
-	async getStopsById(id: string) {
+	async getStopsById(id: string): Promise<Stop[] | null> {
 
 		const data = await ApiService.request(HTTPMethod.GET, `${this.resource}/${id}/stops`);
-		return data;
+		const parsedData = StopsResponseSchema.parse(data).stops;
+
+		return parsedData;
 
 	}
 }
