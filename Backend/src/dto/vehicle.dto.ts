@@ -6,7 +6,7 @@ export type VehicleDTO = {
 
 	tripId: string,
 	routeId: string,
-	position: Coordinates
+	coordinates: Coordinates
 
 }
 
@@ -39,7 +39,7 @@ export function mapVehicleToDTO(vehicle: VehiclePosition): VehicleDTO {
 
 		tripId: trip.tripId,
 		routeId: trip.routeId,
-		position: {
+		coordinates: {
 			lon: position.longitude,
 			lat: position.latitude
 		}

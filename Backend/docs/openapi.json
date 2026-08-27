@@ -1,6 +1,6 @@
 {
   "info": {
-    "title": "BusTracker APPI",
+    "title": "BusTracker API",
     "version": "1.0.0",
     "description": ""
   },
@@ -93,7 +93,7 @@
                     "routeId": {
                       "type": "string"
                     },
-                    "position": {
+                    "coordinates": {
                       "type": "object",
                       "properties": {
                         "lat": {
@@ -112,7 +112,7 @@
                   },
                   "additionalProperties": false,
                   "required": [
-                    "position",
+                    "coordinates",
                     "routeId",
                     "tripId"
                   ]
@@ -709,7 +709,7 @@
                       "routeId": {
                         "type": "string"
                       },
-                      "position": {
+                      "coordinates": {
                         "type": "object",
                         "properties": {
                           "lat": {
@@ -728,7 +728,7 @@
                     },
                     "additionalProperties": false,
                     "required": [
-                      "position",
+                      "coordinates",
                       "routeId",
                       "tripId"
                     ]
