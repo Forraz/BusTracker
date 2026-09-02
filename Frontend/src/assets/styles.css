@@ -1,1 +1,73 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+:root {
+
+	--primary: #3587E6;
+	--primary-hover: #2F7DDA;
+
+	--secondary-green: #65A54C;
+	--secondary-purple: #806FCD;
+
+	--text-primary: #121926;
+	--text-secondary: #6C747F;
+	--text-muted: #90989F;
+	--text-disabled: #AEB6BE;
+
+	--surface: #FEFEFE;
+	--surface-secondary: #F8F8F7;
+	--surface-tertiary: #F5F2ED;
+
+	--border: #CDD3D2;
+	--divider: #ECECE7;
+
+}
+
+[data-theme="dark"] {
+
+	--primary: #1E57B8;
+	--primary-hover: #3785E8;
+
+	--secondary-green: #508F3B;
+	--secondary-purple: #5D4CB0;
+
+	--text-primary: #F2F4F6;
+	--text-secondary: #9FA8B0;
+	--text-muted: #7F8994;
+	--text-disabled: #636B74;
+
+	--surface: #13181E;
+	--surface-secondary: #1B252F;
+	--surface-tertiary: #19212C;
+
+	--border: #3F4D60;
+	--divider: #28323E;
+
+	.leaflet-container {
+	  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+	}
+
+}
+
+@theme inline {
+
+	--color-primary: var(--primary);
+	--color-primary-hover: var(--primary-hover);
+
+	--color-secondary-green: var(--secondary-green);
+	--color-secondary-purple: var(--secondary-purple);
+
+	--color-text-primary: var(--text-primary);
+	--color-text-secondary: var(--text-secondary);
+	--color-text-muted: var(--text-muted);
+	--color-text-disabled: var(--text-disabled);
+
+	--color-surface: var(--surface);
+	--color-surface-secondary: var(--surface-secondary);
+	--color-surface-tertiary: var(--surface-tertiary);
+
+	--color-border: var(--border);
+	--color-divider: var(--divider);
+
+
+}
+

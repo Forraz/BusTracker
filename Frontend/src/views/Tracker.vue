@@ -2,6 +2,7 @@
 
 	import Map from "../components/Map.vue";
 	import Sidebar from "../components/Sidebar.vue";
+	import ThemeSwitch from "../components/ThemeSwitch.vue";
 	import { LatLng } from "leaflet";
 	import { ref } from "vue";
 	import { useRouter, useRoute } from "vue-router";
@@ -24,6 +25,7 @@
 	<div class="relative">
 		<Map v-model:position='position' />
 		<Sidebar :updatePosition='updatePosition' />
+		<ThemeSwitch />
 	</div>
 	
 </template>
