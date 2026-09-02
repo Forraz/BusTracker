@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 	import Map from "../components/Map.vue";
-	import Sidebar from "../components/Sidebar.vue";
+	import Sidebar from "../components/Sidebar/Sidebar.vue";
 	import ThemeSwitch from "../components/ThemeSwitch.vue";
 	import { LatLng } from "leaflet";
 	import { ref } from "vue";
