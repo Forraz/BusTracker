@@ -37,6 +37,7 @@
 
 	async function getRoutes() {
 
+		routes.value = [];
 		const data = await stopService.getRoutesById(currentStop.value.id);
 		routes.value = data;
 
@@ -44,6 +45,7 @@
 
 	async function getVehicles() {
 
+		vehicles.value = [];
 		const data = await routeService.getVehiclesById(currentRoute.value.id);
 		vehicles.value = data;
 
@@ -208,7 +210,7 @@
 				:icon="swapHorizontal"
 				:presenter="(route) => route.name"
 				@select="selectRoute"
-				v-else
+				v-else-if="currentStop"
 			/>
 
 			<SelectedResultCard 
@@ -223,7 +225,7 @@
 				:icon="bus"
 				:presenter="(vehicle) => vehicle.tripId"
 				@select="selectVehicle"
-				v-else
+				v-else-if="currentRoute"
 			/>
 
 		</div>
