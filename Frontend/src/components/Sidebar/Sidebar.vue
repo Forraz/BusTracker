@@ -16,6 +16,8 @@
 	import { swapHorizontal, layers, bus, arrowBack } from "ionicons/icons";
 	import { LatLng } from "leaflet";
 
+	let searchInput = ref("");
+
 	let stops = ref([]);
 	let routes = ref([]);
 	let vehicles = ref([]);
@@ -47,11 +49,11 @@
 
 	}
 
-	function selectStop(stop) {
+	async function selectStop(stop) {
 
 		map.setPosition(new LatLng(stop.coordinates.lat, stop.coordinates.lon));
 		currentStop.value = stop;
-		getRoutes();
+		await getRoutes();
 
 		map.clearMarkers();
 		map.addMarker({
@@ -104,9 +106,15 @@
 
 	}
 
-	function handleSearchBarInput(input) {
+	function handleSearchBarInput() {
 
-		searchStops(input);
+		searchStops(searchInput.value);
+
+	}
+
+	function clearSearchBar() {
+
+		searchInput.value = "";
 
 	}
 
@@ -139,6 +147,7 @@
 <template>
 	<div class="absolute right-0 top-0 h-screen flex flex-col z-1000 min-w-120 bg-surface p-4 gap-6 rounded-l-lg">
 
+		<!-- Back button -->
 		<div class="cursor-pointer">
 			<div @click="back()">
 				<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
@@ -146,7 +155,7 @@
 		</div>
 
 		<!-- Search type  -->
-		<div class="flex gap-2 justify-center items-center">
+		<div class="flex gap-2 justify-center items-center" v-if="!currentStop">
 
 			<div class="flex justify-center items-center gap-2">
 				<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
@@ -168,52 +177,56 @@
 
 		</div>
 
-		<SearchBar @input="handleSearchBarInput" />
+		<SearchBar @input="handleSearchBarInput" v-model="searchInput" v-if="!currentStop"/>
 
-		<SelectedResultCard 
-			title="Stop"
-			:icon="layers"
-			:content="currentStop.name"
-			v-if="currentStop"
-		/>
-		<SearchResultList 
-			title="Stops"
-			:data="stops"
-			:icon="layers"
-			:presenter="(stop) => stop.name"
-			@select="selectStop"
-			v-else
-		/>
+		<div class="flex flex-col gap-1.5">
 
-		<SelectedResultCard 
-			title="Route"
-			:icon="swapHorizontal"
-			:content="currentRoute.name"
-			v-if="currentRoute"
-		/>
-		<SearchResultList 
-			title="Routes"
-			:data="routes"
-			:icon="swapHorizontal"
-			:presenter="(route) => route.name"
-			@select="selectRoute"
-			v-else
-		/>
+			<SelectedResultCard 
+				title="Stop"
+				:icon="layers"
+				:content="currentStop.name"
+				v-if="currentStop"
+			/>
+			<SearchResultList 
+				title="Stops"
+				:data="stops"
+				:icon="layers"
+				:presenter="(stop) => stop.name"
+				@select="selectStop"
+				v-else
+			/>
 
-		<SelectedResultCard 
-			title="Vehicle"
-			:icon="bus"
-			:content="currentVehicle.tripId"
-			v-if="currentVehicle"
-		/>
-		<SearchResultList 
-			title="Vehicles"
-			:data="vehicles"
-			:icon="bus"
-			:presenter="(vehicle) => vehicle.tripId"
-			@select="selectVehicle"
-			v-else
-		/>
+			<SelectedResultCard 
+				title="Route"
+				:icon="swapHorizontal"
+				:content="currentRoute.name"
+				v-if="currentRoute"
+			/>
+			<SearchResultList 
+				title="Routes"
+				:data="routes"
+				:icon="swapHorizontal"
+				:presenter="(route) => route.name"
+				@select="selectRoute"
+				v-else
+			/>
+
+			<SelectedResultCard 
+				title="Vehicle"
+				:icon="bus"
+				:content="currentVehicle.tripId"
+				v-if="currentVehicle"
+			/>
+			<SearchResultList 
+				title="Vehicles"
+				:data="vehicles"
+				:icon="bus"
+				:presenter="(vehicle) => vehicle.tripId"
+				@select="selectVehicle"
+				v-else
+			/>
+
+		</div>
 
 	</div>
 </template>

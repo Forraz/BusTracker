@@ -1,14 +1,16 @@
 <script setup>
 
-	import { ref, defineEmits } from "vue";
+	import { ref } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { search } from "ionicons/icons";
 
+	const searchInput = defineModel();
+
 	const emit = defineEmits(["input"]);
 
-	function emitInput(e) {
+	function emitInput() {
 
-		emit("input", e.target.value);
+		emit("input");
 
 	}
 
@@ -23,6 +25,7 @@
 				class="block text-text-primary placeholder:text-secondary focus:outline-none w-full" 
 				type="text"
 				placeholder="Enter a stop name"
+				v-model="searchInput"
 				@input="emitInput"
 			/>
 		</div>
