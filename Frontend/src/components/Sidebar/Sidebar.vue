@@ -13,7 +13,7 @@
 
 	import { ref, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
-	import { swapHorizontal, layers, bus } from "ionicons/icons";
+	import { swapHorizontal, layers, bus, arrowBack } from "ionicons/icons";
 	import { LatLng } from "leaflet";
 
 	let stops = ref([]);
@@ -109,12 +109,41 @@
 		searchStops(input);
 
 	}
+
+	function back() {
+
+		if (currentVehicle.value) {
+
+			currentVehicle.value = null;
+			selectRoute(currentRoute.value);
+
+		} else if (currentRoute.value) {
+
+			currentRoute.value = null;
+			vehicles.value = [];
+			selectStop(currentStop.value);
+
+		} else if (currentStop.value) {
+
+			currentStop.value = null;
+			routes.value = [];
+			map.clearMarkers();
+
+		}
+
+	}
 	
 
 </script>
 
 <template>
 	<div class="absolute right-0 top-0 h-screen flex flex-col z-1000 min-w-120 bg-surface p-4 gap-6 rounded-l-lg">
+
+		<div class="cursor-pointer">
+			<div @click="back()">
+				<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
+			</div>
+		</div>
 
 		<!-- Search type  -->
 		<div class="flex gap-2 justify-center items-center">
