@@ -53,9 +53,10 @@
 
 	async function selectStop(stop) {
 
-		map.setPosition(new LatLng(stop.coordinates.lat, stop.coordinates.lon));
 		currentStop.value = stop;
-		await getRoutes();
+
+		map.setPosition(new LatLng(stop.coordinates.lat, stop.coordinates.lon));
+		map.setZoom(18);
 
 		map.clearMarkers();
 		map.addMarker({
@@ -65,14 +66,16 @@
 			)
 		});
 
-		map.setZoom(18);
+
+		await getRoutes();
 
 	}
 
 	async function selectRoute(route) {
 
 		currentRoute.value = route;
-		await getVehicles();
+
+		map.setZoom(11);
 
 		map.clearMarkers();
 		vehicles.value.forEach((vehicle) => {
@@ -87,14 +90,16 @@
 
 		});
 
-		map.setZoom(11);
+		await getVehicles();
 
 	}
 
 	function selectVehicle(vehicle) {
 
 		currentVehicle.value = vehicle;
+
 		map.setPosition(new LatLng(vehicle.coordinates.lat, vehicle.coordinates.lon));
+		map.setZoom(18);
 
 		map.clearMarkers();
 		map.addMarker({
@@ -104,7 +109,6 @@
 			)
 		});
 
-		map.setZoom(18);
 
 	}
 
