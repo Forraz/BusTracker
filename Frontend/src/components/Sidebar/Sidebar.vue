@@ -8,16 +8,13 @@
 	import SearchResultList from "./SearchResultList.vue";
 	import SelectedResultCard from "./SelectedResultCard.vue";
 
+	import { useMap } from "../../composables/useMap.ts";
+	import { type Marker } from "../../composables/useMapState.ts";
+
 	import { ref, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { swapHorizontal, layers, bus } from "ionicons/icons";
-
-	const props = defineProps({
-		updatePosition: {
-			type: Function,
-			required: true
-		}
-	});
+	import { LatLng } from "leaflet";
 
 	let stops = ref([]);
 	let routes = ref([]);
@@ -26,6 +23,8 @@
 	let currentStop = ref(null);
 	let currentRoute = ref(null);
 	let currentVehicle = ref(null);
+
+	const map = useMap();
 
 	async function searchStops(stopName) {
 
@@ -50,23 +49,58 @@
 
 	function selectStop(stop) {
 
-		props.updatePosition(stop.coordinates.lat, stop.coordinates.lon);
+		map.setPosition(new LatLng(stop.coordinates.lat, stop.coordinates.lon));
 		currentStop.value = stop;
 		getRoutes();
 
+		map.clearMarkers();
+		map.addMarker({
+			id: "currentStop",
+			position: new LatLng(
+				stop.coordinates.lat, stop.coordinates.lon
+			)
+		});
+
+		map.setZoom(18);
+
 	}
 
-	function selectRoute(route) {
+	async function selectRoute(route) {
 
 		currentRoute.value = route;
-		getVehicles();
+		await getVehicles();
+
+		map.clearMarkers();
+		vehicles.value.forEach((vehicle) => {
+
+			map.addMarker({
+				id: `vehicle${vehicle.tripId}`,
+				position: new LatLng(
+					vehicle.coordinates.lat,
+					vehicle.coordinates.lon
+				)
+			});
+
+		});
+
+		map.setZoom(11);
 
 	}
 
 	function selectVehicle(vehicle) {
 
 		currentVehicle.value = vehicle;
-		props.updatePosition(vehicle.coordinates.lat, vehicle.coordinates.lon);
+		map.setPosition(new LatLng(vehicle.coordinates.lat, vehicle.coordinates.lon));
+
+		map.clearMarkers();
+		map.addMarker({
+			id: "currentVehicle",
+			position: new LatLng(
+				vehicle.coordinates.lat, vehicle.coordinates.lon
+			)
+		});
+
+		map.setZoom(18);
 
 	}
 

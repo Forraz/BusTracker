@@ -3,28 +3,23 @@
 	import Map from "../components/Map.vue";
 	import Sidebar from "../components/Sidebar/Sidebar.vue";
 	import ThemeSwitch from "../components/ThemeSwitch.vue";
-	import { LatLng } from "leaflet";
-	import { ref } from "vue";
+	import { ref, provide } from "vue";
 	import { useRouter, useRoute } from "vue-router";
-
-	const position = ref(new LatLng(0, 0));
-
-	function updatePosition(lat: number, lon: number) {
-
-		position.value = new LatLng(lat, lon);
-
-	}
+	import { useMapState } from "../composables/useMapState.ts";
 
 	const router = useRouter()
 	const route = useRoute()
+	
+	const map = useMapState();
+	provide("map", map);
 
 </script>
 
 <template>
 
 	<div class="relative">
-		<Map v-model:position='position' />
-		<Sidebar :updatePosition='updatePosition' />
+		<Map />
+		<Sidebar />
 		<ThemeSwitch />
 	</div>
 	

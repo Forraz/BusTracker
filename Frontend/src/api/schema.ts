@@ -115,7 +115,7 @@ export const VehiclesResponseSchema = z.object({
 		
 });
 
-export type Coordintaes = z.infer<typeof CoordinatesSchema>;
+export type Coordinates = z.infer<typeof CoordinatesSchema>;
 export type Stop = z.infer<typeof StopSchema>;
 export type Trip = z.infer<typeof TripSchema>;
 export type Route = z.infer<typeof RouteSchema>;
