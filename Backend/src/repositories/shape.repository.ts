@@ -1,4 +1,4 @@
-import { eq, getTableColumns } from "drizzle-orm";
+import { asc, eq, getTableColumns } from "drizzle-orm";
 import { Repository } from "../core/repository.js";
 import { shapesTable, tripsTable, type Shape } from "../db/schema.js";
 
@@ -32,7 +32,8 @@ export class ShapeRepository extends Repository {
 			})
 			.from(shapesTable)
 			.innerJoin(tripsTable, eq(shapesTable.id, tripsTable.shapeId))
-			.where(eq(tripsTable.id, tripId));
+			.where(eq(tripsTable.id, tripId))
+			.orderBy(asc(shapesTable.shapeDistTraveled));
 
 		return result.length != 0 ? result : null;
 
