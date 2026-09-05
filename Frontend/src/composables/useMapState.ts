@@ -9,11 +9,19 @@ export interface Marker {
 
 }
 
+export interface Polyline {
+
+	id: string,
+	parts: [LatLng]
+
+}
+
 class MapState {
 
 	position = ref(new LatLng(0, 0));
 	zoom = ref(18);
 	markers = ref<Marker[]>([]);
+	polylines = ref<Polyline[]>([]);
 
 	setPosition(val: LatLng) {
 
@@ -42,6 +50,24 @@ class MapState {
 	clearMarkers() {
 
 		this.markers.value = [];
+
+	}
+
+	addPolyline(polyline: Polyline) {
+
+		this.polylines.value = [...this.polylines.value, polyline] 
+
+	}
+
+	removePolyline(id: string) {
+
+		this.polylines.value = this.polylines.value.filter((polyline) => polyline.id != id);
+
+	}
+
+	clearPolylines() {
+
+		this.polylines.value = [];
 
 	}
 

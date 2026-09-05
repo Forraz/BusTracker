@@ -9,7 +9,7 @@
 	import SelectedResultCard from "./SelectedResultCard.vue";
 
 	import { useMap } from "../../composables/useMap.ts";
-	import { type Marker } from "../../composables/useMapState.ts";
+	import { type Marker, type Polyline } from "../../composables/useMapState.ts";
 
 	import { ref, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
@@ -66,7 +66,6 @@
 			)
 		});
 
-
 		await getRoutes();
 
 	}
@@ -94,7 +93,7 @@
 
 	}
 
-	function selectVehicle(vehicle) {
+	async function selectVehicle(vehicle) {
 
 		currentVehicle.value = vehicle;
 
@@ -107,6 +106,13 @@
 			position: new LatLng(
 				vehicle.coordinates.lat, vehicle.coordinates.lon
 			)
+		});
+
+		const shape = await tripService.getShapeById(vehicle.tripId);
+		map.clearPolylines();
+		map.addPolyline({
+			id: shape.id,
+			parts: shape.parts.map((part) => new LatLng(part.coordinates.lat, part.coordinates.lon))
 		});
 
 
@@ -130,6 +136,8 @@
 
 			currentVehicle.value = null;
 			selectRoute(currentRoute.value);
+			map.clearMarkers();
+			map.clearPolylines();
 
 		} else if (currentRoute.value) {
 

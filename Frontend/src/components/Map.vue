@@ -2,7 +2,7 @@
 
 	import "leaflet/dist/leaflet.css";
 	import { LatLng } from "leaflet";
-	import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
+	import { LMap, LTileLayer, LMarker, LPolyline } from "@vue-leaflet/vue-leaflet";
 	import { onMounted } from "vue";
 	import { useMap } from "../composables/useMap.ts";
 
@@ -20,6 +20,9 @@
 			/>
 			<div v-for="marker in map.markers.value">
 				<LMarker :lat-lng="marker.position"/>
+			</div>
+			<div v-for="polyline in map.polylines.value">
+				<LPolyline :lat-lngs="polyline.parts"/>
 			</div>
 		</LMap>
 	</div>
