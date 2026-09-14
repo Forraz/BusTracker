@@ -37,7 +37,7 @@
 
 	async function searchStops(stopName) {
 
-		const data = await stopService.query(`name=${stopName}`) || [];
+		const data = await stopService.query(`name=${stopName}&limit=20`) || [];
 		stops.value = data;
 
 	}
@@ -213,7 +213,7 @@
 </script>
 
 <template>
-	<div class="absolute right-0 top-0 h-screen flex flex-col z-1000 max-w-120 w-full bg-surface p-4 gap-6 rounded-l-lg">
+	<div class="absolute right-0 top-0 flex flex-col z-1000 max-w-120 w-full h-screen overflow-y-auto bg-surface p-4 gap-6 rounded-l-lg">
 
 		<!-- Back button -->
 		<div class="cursor-pointer">

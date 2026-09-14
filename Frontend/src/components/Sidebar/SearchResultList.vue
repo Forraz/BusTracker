@@ -28,7 +28,7 @@
 		<p class="ml-1 text-text-secondary text-sm font-semibold uppercase">
 			{{ props.title }}
 		</p>
-		<div class="flex flex-col border-border border rounded-lg divide-border divide-y overflow-y-auto">
+		<div class="flex flex-col border-border border rounded-lg divide-border divide-y">
 			<div v-for="item in props.data" class="hover:bg-surface-secondary">
 				<div @click="emitSelect(item)" class="flex items-center gap-2 px-2 py-4 cursor-pointer">
 					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
