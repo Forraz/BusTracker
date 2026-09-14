@@ -3,6 +3,11 @@
 	import stopService from "../../api/services/stop.service.ts";
 	import routeService from "../../api/services/route.service.ts";
 	import tripService from "../../api/services/trip.service.ts";
+	
+	import { type Coordinates } from "../../api/schema.ts";
+	import { MovingVehicle } from "../../utils/movingVehicle.ts";
+
+	import { along, nearestPointOnLine, lineString } from "@turf/turf";
 
 	import SearchBar from "./SearchBar.vue";
 	import SearchResultList from "./SearchResultList.vue";
@@ -11,7 +16,7 @@
 	import { useMap } from "../../composables/useMap.ts";
 	import { type Marker, type Polyline } from "../../composables/useMapState.ts";
 
-	import { ref, onMounted } from "vue";
+	import { ref, computed, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { swapHorizontal, layers, bus, arrowBack } from "ionicons/icons";
 	import { LatLng } from "leaflet";
@@ -24,7 +29,9 @@
 
 	let currentStop = ref(null);
 	let currentRoute = ref(null);
+
 	let currentVehicle = ref(null);
+	let movingVehicle = ref(null);
 
 	const map = useMap();
 
@@ -61,9 +68,7 @@
 		map.clearMarkers();
 		map.addMarker({
 			id: "currentStop",
-			position: new LatLng(
-				stop.coordinates.lat, stop.coordinates.lon
-			)
+			position: new LatLng(stop.coordinates.lat, stop.coordinates.lon)
 		});
 
 		await getRoutes();
@@ -95,7 +100,9 @@
 
 	async function selectVehicle(vehicle) {
 
+		const shape = await tripService.getShapeById(vehicle.tripId);
 		currentVehicle.value = vehicle;
+		movingVehicle.value = new MovingVehicle(vehicle, shape);
 
 		map.setPosition(new LatLng(vehicle.coordinates.lat, vehicle.coordinates.lon));
 		map.setZoom(18);
@@ -103,12 +110,15 @@
 		map.clearMarkers();
 		map.addMarker({
 			id: "currentVehicle",
-			position: new LatLng(
-				vehicle.coordinates.lat, vehicle.coordinates.lon
-			)
+			position: computed(() => { 
+
+				const vehiclePosition = movingVehicle.value.getPosition();
+
+				return new LatLng(vehiclePosition.lat, vehiclePosition.lon) 
+
+			})
 		});
 
-		const shape = await tripService.getShapeById(vehicle.tripId);
 		map.clearPolylines();
 		map.addPolyline({
 			id: shape.id,
@@ -127,6 +137,15 @@
 	function clearSearchBar() {
 
 		searchInput.value = "";
+
+	}
+
+	function updateCurrentVehiclePositon(deltaTime) {
+
+		currentDistanceTraveled += (60 / 3.6) * deltaTime;
+		const point = along(currentShapeLine, currentDistanceTraveled, { units: "meters" });
+
+		currentVehiclePosition.value = { lat: point.geometry.coordinates[1], lon: point.geometry.coordinates[0] };
 
 	}
 
@@ -154,12 +173,47 @@
 		}
 
 	}
+
+	onMounted(() => {
+
+		let lastTime = new Date();
+
+		setInterval(() => {
+
+			const now = new Date();
+			const deltaTime = (now - lastTime) / 1000;
+			lastTime = now;
+
+			if (movingVehicle.value) {
+				movingVehicle.value.update(deltaTime);
+			}
+
+		}, 1000 / 60);
+
+		setInterval( async () => {
+
+			if (movingVehicle.value) {
+
+				 const vehicle = await tripService.getVehicleById(currentVehicle.value.tripId);
+				 if (vehicle.coordinates.lat != currentVehicle.value.coordinates.lat) {
+
+					currentVehicle.value = vehicle;
+					movingVehicle.value.correct(vehicle);
+
+				 }
+
+			}
+
+		}, 1000 * 5);
+
+	});
+
 	
 
 </script>
 
 <template>
-	<div class="absolute right-0 top-0 h-screen flex flex-col z-1000 min-w-120 bg-surface p-4 gap-6 rounded-l-lg">
+	<div class="absolute right-0 top-0 h-screen flex flex-col z-1000 max-w-120 w-full bg-surface p-4 gap-6 rounded-l-lg">
 
 		<!-- Back button -->
 		<div class="cursor-pointer">
