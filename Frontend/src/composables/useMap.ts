@@ -1,7 +1,16 @@
 import { inject } from "vue";
+import { MapState } from "./useMapState";
 
-export function useMap() {
+export function useMap(): MapState | null {
 
-	return inject("map");
+	const map: MapState | undefined = inject("map");
+
+	// if (!map) {
+	//
+	// 	console.
+	//
+	// }
+
+	return map || null;
 
 }

@@ -16,161 +16,21 @@
 	import { useMap } from "../../composables/useMap.ts";
 	import { type Marker, type Polyline } from "../../composables/useMapState.ts";
 
+	import { useSidebarState } from "../../composables/useSidebarState.ts";
+
 	import { ref, computed, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { swapHorizontal, layers, bus, arrowBack } from "ionicons/icons";
 	import { LatLng } from "leaflet";
 
-	let searchInput = ref("");
-
-	let stops = ref([]);
-	let routes = ref([]);
-	let vehicles = ref([]);
-
-	let currentStop = ref(null);
-	let currentRoute = ref(null);
-
-	let currentVehicle = ref(null);
-	let movingVehicle = ref(null);
-
 	const map = useMap();
+	const sidebar = useSidebarState(map);
 
-	async function searchStops(stopName) {
-
-		const data = await stopService.query(`name=${stopName}&limit=20`) || [];
-		stops.value = data;
-
-	}
-
-	async function getRoutes() {
-
-		routes.value = [];
-		const data = await stopService.getRoutesById(currentStop.value.id);
-		routes.value = data;
-
-	}
-
-	async function getVehicles() {
-
-		vehicles.value = [];
-		const data = await routeService.getVehiclesById(currentRoute.value.id);
-		vehicles.value = data;
-
-	}
-
-	async function selectStop(stop) {
-
-		currentStop.value = stop;
-
-		map.setPosition(new LatLng(stop.coordinates.lat, stop.coordinates.lon));
-		map.setZoom(18);
-
-		map.clearMarkers();
-		map.addMarker({
-			id: "currentStop",
-			position: new LatLng(stop.coordinates.lat, stop.coordinates.lon)
-		});
-
-		await getRoutes();
-
-	}
-
-	async function selectRoute(route) {
-
-		currentRoute.value = route;
-
-		map.setZoom(11);
-
-		map.clearMarkers();
-		vehicles.value.forEach((vehicle) => {
-
-			map.addMarker({
-				id: `vehicle${vehicle.tripId}`,
-				position: new LatLng(
-					vehicle.coordinates.lat,
-					vehicle.coordinates.lon
-				)
-			});
-
-		});
-
-		await getVehicles();
-
-	}
-
-	async function selectVehicle(vehicle) {
-
-		const shape = await tripService.getShapeById(vehicle.tripId);
-		currentVehicle.value = vehicle;
-		movingVehicle.value = new MovingVehicle(vehicle, shape);
-
-		map.setPosition(new LatLng(vehicle.coordinates.lat, vehicle.coordinates.lon));
-		map.setZoom(18);
-
-		map.clearMarkers();
-		map.addMarker({
-			id: "currentVehicle",
-			position: computed(() => { 
-
-				const vehiclePosition = movingVehicle.value.getPosition();
-
-				return new LatLng(vehiclePosition.lat, vehiclePosition.lon) 
-
-			})
-		});
-
-		map.clearPolylines();
-		map.addPolyline({
-			id: shape.id,
-			parts: shape.parts.map((part) => new LatLng(part.coordinates.lat, part.coordinates.lon))
-		});
-
-
-	}
+	const searchInput = ref("");
 
 	function handleSearchBarInput() {
 
-		searchStops(searchInput.value);
-
-	}
-
-	function clearSearchBar() {
-
-		searchInput.value = "";
-
-	}
-
-	function updateCurrentVehiclePositon(deltaTime) {
-
-		currentDistanceTraveled += (60 / 3.6) * deltaTime;
-		const point = along(currentShapeLine, currentDistanceTraveled, { units: "meters" });
-
-		currentVehiclePosition.value = { lat: point.geometry.coordinates[1], lon: point.geometry.coordinates[0] };
-
-	}
-
-	function back() {
-
-		if (currentVehicle.value) {
-
-			currentVehicle.value = null;
-			selectRoute(currentRoute.value);
-			map.clearMarkers();
-			map.clearPolylines();
-
-		} else if (currentRoute.value) {
-
-			currentRoute.value = null;
-			vehicles.value = [];
-			selectStop(currentStop.value);
-
-		} else if (currentStop.value) {
-
-			currentStop.value = null;
-			routes.value = [];
-			map.clearMarkers();
-
-		}
+		sidebar.queryStops(searchInput.value);
 
 	}
 
@@ -184,31 +44,18 @@
 			const deltaTime = (now - lastTime) / 1000;
 			lastTime = now;
 
-			if (movingVehicle.value) {
-				movingVehicle.value.update(deltaTime);
-			}
+			sidebar.updateMovingVehicle(deltaTime);
+
 
 		}, 1000 / 60);
 
-		setInterval( async () => {
+		setInterval(() => {
 
-			if (movingVehicle.value) {
-
-				 const vehicle = await tripService.getVehicleById(currentVehicle.value.tripId);
-				 if (vehicle.coordinates.lat != currentVehicle.value.coordinates.lat) {
-
-					currentVehicle.value = vehicle;
-					movingVehicle.value.correct(vehicle);
-
-				 }
-
-			}
+			sidebar.correctMovingVehicle();
 
 		}, 1000 * 5);
 
 	});
-
-	
 
 </script>
 
@@ -216,14 +63,14 @@
 	<div class="absolute right-0 top-0 flex flex-col z-1000 max-w-120 w-full h-screen overflow-y-auto bg-surface p-4 gap-6 rounded-l-lg">
 
 		<!-- Back button -->
-		<div class="cursor-pointer">
-			<div @click="back()">
+		<div class="cursor-pointer" v-if="sidebar.selectedStop.value">
+			<div @click="sidebar.back">
 				<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
 			</div>
 		</div>
 
 		<!-- Search type  -->
-		<div class="flex gap-2 justify-center items-center" v-if="!currentStop">
+		<div class="flex gap-2 justify-center items-center" v-if="!sidebar.selectedStop.value">
 
 			<div class="flex justify-center items-center gap-2">
 				<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
@@ -245,53 +92,53 @@
 
 		</div>
 
-		<SearchBar @input="handleSearchBarInput" v-model="searchInput" v-if="!currentStop"/>
+		<SearchBar @input="handleSearchBarInput" v-model="searchInput" v-if="!sidebar.selectedStop.value" />
 
 		<div class="flex flex-col gap-1.5">
 
 			<SelectedResultCard 
 				title="Stop"
 				:icon="layers"
-				:content="currentStop.name"
-				v-if="currentStop"
+				:content="sidebar.selectedStop.value.name"
+				v-if="sidebar.selectedStop.value"
 			/>
 			<SearchResultList 
 				title="Stops"
-				:data="stops"
+				:data="sidebar.stops.value"
 				:icon="layers"
 				:presenter="(stop) => stop.name"
-				@select="selectStop"
+				@select="(vehicle) => sidebar.selectStop(vehicle)"
 				v-else
 			/>
 
 			<SelectedResultCard 
 				title="Route"
 				:icon="swapHorizontal"
-				:content="currentRoute.name"
-				v-if="currentRoute"
+				:content="sidebar.selectedRoute.value.name"
+				v-if="sidebar.selectedRoute.value"
 			/>
 			<SearchResultList 
 				title="Routes"
-				:data="routes"
+				:data="sidebar.routes.value"
 				:icon="swapHorizontal"
 				:presenter="(route) => route.name"
-				@select="selectRoute"
-				v-else-if="currentStop"
+				@select="(route) => sidebar.selectRoute(route)"
+				v-else-if="sidebar.selectedStop.value"
 			/>
 
 			<SelectedResultCard 
 				title="Vehicle"
 				:icon="bus"
-				:content="currentVehicle.tripId"
-				v-if="currentVehicle"
+				:content="sidebar.selectedVehicle.value.tripId"
+				v-if="sidebar.selectedVehicle.value"
 			/>
 			<SearchResultList 
 				title="Vehicles"
-				:data="vehicles"
+				:data="sidebar.vehicles.value"
 				:icon="bus"
 				:presenter="(vehicle) => vehicle.tripId"
-				@select="selectVehicle"
-				v-else-if="currentRoute"
+				@select="(vehicle) => sidebar.selectVehicle(vehicle)"
+				v-else-if="sidebar.selectedRoute.value"
 			/>
 
 		</div>

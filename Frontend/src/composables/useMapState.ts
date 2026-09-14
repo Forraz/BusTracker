@@ -1,22 +1,21 @@
 import { ref } from "vue";
 import { LatLng } from "leaflet";
-import { type Coordinates } from "../api/schema.ts";
 
 export interface Marker {
 
 	id: string,
-	position: Coordinates
+	position: LatLng
 
 }
 
 export interface Polyline {
 
 	id: string,
-	parts: [LatLng]
+	parts: LatLng[]
 
 }
 
-class MapState {
+export class MapState {
 
 	// Amsterdam
 	position = ref(new LatLng(52.37403, 4.88969));
