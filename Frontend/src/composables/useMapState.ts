@@ -18,7 +18,9 @@ export interface Polyline {
 
 class MapState {
 
-	position = ref(new LatLng(0, 0));
+	// Amsterdam
+	position = ref(new LatLng(52.37403, 4.88969));
+
 	zoom = ref(18);
 	markers = ref<Marker[]>([]);
 	polylines = ref<Polyline[]>([]);
