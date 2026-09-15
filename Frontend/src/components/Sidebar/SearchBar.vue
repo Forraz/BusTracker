@@ -1,18 +1,43 @@
-<script setup>
+<script setup lang="ts">
 
-	import { ref } from "vue";
+	import { ref, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { search } from "ionicons/icons";
+
+	const props = defineProps<{
+		autoFocus?: boolean
+	}>()
 
 	const searchInput = defineModel();
 
 	const emit = defineEmits(["input"]);
+	const inputElement = ref(null);
 
 	function emitInput() {
 
 		emit("input");
 
 	}
+
+	function focus() {
+
+		if (inputElement.value) {
+
+			inputElement.value.focus();
+
+		}
+
+	}
+
+	onMounted(() => { 
+
+		if (props.autoFocus) {
+
+			focus();
+
+		}
+
+	}) 
 
 </script>
 
@@ -25,6 +50,7 @@
 				class="block text-text-primary placeholder:text-secondary focus:outline-none w-full" 
 				type="text"
 				placeholder="Enter a stop name"
+				ref="inputElement"
 				v-model="searchInput"
 				@input="emitInput"
 			/>

@@ -46,7 +46,6 @@
 
 			sidebar.updateMovingVehicle(deltaTime);
 
-
 		}, 1000 / 60);
 
 		setInterval(() => {
@@ -92,7 +91,7 @@
 
 		</div>
 
-		<SearchBar @input="handleSearchBarInput" v-model="searchInput" v-if="!sidebar.selectedStop.value" />
+		<SearchBar @input="handleSearchBarInput" :autoFocus="true" v-model="searchInput" v-if="!sidebar.selectedStop.value" />
 
 		<div class="flex flex-col gap-1.5">
 
