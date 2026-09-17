@@ -106,7 +106,7 @@
 				:data="sidebar.stops.value"
 				:icon="layers"
 				:presenter="(stop) => stop.name"
-				@select="(vehicle) => sidebar.selectStop(vehicle)"
+				@select="(stop) => sidebar.selectStop(stop)"
 				v-else
 			/>
 
