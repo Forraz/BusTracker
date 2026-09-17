@@ -13,6 +13,8 @@
 	import SearchResultList from "./SearchResultList.vue";
 	import SelectedResultCard from "./SelectedResultCard.vue";
 
+	import FadeTransition from "../Transitions/FadeTransition.vue";
+
 	import { useMap } from "../../composables/useMap.ts";
 	import { type Marker, type Polyline } from "../../composables/useMapState.ts";
 
@@ -62,11 +64,13 @@
 	<div class="absolute right-0 top-0 flex flex-col z-1000 max-w-120 w-full h-screen overflow-y-auto bg-surface p-4 gap-6 rounded-l-lg">
 
 		<!-- Back button -->
-		<div class="cursor-pointer" v-if="sidebar.selectedStop.value">
-			<div @click="sidebar.back">
-				<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
+		<FadeTransition>
+			<div class="cursor-pointer" v-if="sidebar.selectedStop.value">
+				<div @click="sidebar.back">
+					<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
+				</div>
 			</div>
-		</div>
+		</FadeTransition>
 
 		<!-- Search type  -->
 		<div class="flex gap-2 justify-center items-center" v-if="!sidebar.selectedStop.value">
@@ -95,50 +99,56 @@
 
 		<div class="flex flex-col gap-1.5">
 
-			<SelectedResultCard 
-				title="Stop"
-				:icon="layers"
-				:content="sidebar.selectedStop.value.name"
-				v-if="sidebar.selectedStop.value"
-			/>
-			<SearchResultList 
-				title="Stops"
-				:data="sidebar.stops.value"
-				:icon="layers"
-				:presenter="(stop) => stop.name"
-				@select="(stop) => sidebar.selectStop(stop)"
-				v-else
-			/>
+			<FadeTransition>
+				<SelectedResultCard 
+					title="Stop"
+					:icon="layers"
+					:content="sidebar.selectedStop.value.name"
+					v-if="sidebar.selectedStop.value"
+				/>
+				<SearchResultList 
+					title="Stops"
+					:data="sidebar.stops.value"
+					:icon="layers"
+					:presenter="(stop) => stop.name"
+					@select="(stop) => sidebar.selectStop(stop)"
+					v-else
+				/>
+			</FadeTransition>
 
-			<SelectedResultCard 
-				title="Route"
-				:icon="swapHorizontal"
-				:content="sidebar.selectedRoute.value.name"
-				v-if="sidebar.selectedRoute.value"
-			/>
-			<SearchResultList 
-				title="Routes"
-				:data="sidebar.routes.value"
-				:icon="swapHorizontal"
-				:presenter="(route) => route.name"
-				@select="(route) => sidebar.selectRoute(route)"
-				v-else-if="sidebar.selectedStop.value"
-			/>
+			<FadeTransition>
+				<SelectedResultCard 
+					title="Route"
+					:icon="swapHorizontal"
+					:content="sidebar.selectedRoute.value.name"
+					v-if="sidebar.selectedRoute.value"
+				/>
+				<SearchResultList 
+					title="Routes"
+					:data="sidebar.routes.value"
+					:icon="swapHorizontal"
+					:presenter="(route) => route.name"
+					@select="(route) => sidebar.selectRoute(route)"
+					v-else-if="sidebar.selectedStop.value"
+				/>
+			</FadeTransition>
 
-			<SelectedResultCard 
-				title="Vehicle"
-				:icon="bus"
-				:content="sidebar.selectedVehicle.value.tripId"
-				v-if="sidebar.selectedVehicle.value"
-			/>
-			<SearchResultList 
-				title="Vehicles"
-				:data="sidebar.vehicles.value"
-				:icon="bus"
-				:presenter="(vehicle) => vehicle.tripId"
-				@select="(vehicle) => sidebar.selectVehicle(vehicle)"
-				v-else-if="sidebar.selectedRoute.value"
-			/>
+			<FadeTransition>
+				<SelectedResultCard 
+					title="Vehicle"
+					:icon="bus"
+					:content="sidebar.selectedVehicle.value.tripId"
+					v-if="sidebar.selectedVehicle.value"
+				/>
+				<SearchResultList 
+					title="Vehicles"
+					:data="sidebar.vehicles.value"
+					:icon="bus"
+					:presenter="(vehicle) => vehicle.tripId"
+					@select="(vehicle) => sidebar.selectVehicle(vehicle)"
+					v-else-if="sidebar.selectedRoute.value"
+				/>
+			</FadeTransition>
 
 		</div>
 

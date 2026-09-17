@@ -12,7 +12,7 @@
 
 <template>
 
-	<div class="flex flex-col gap-1">
+	<div class="flex flex-col gap-1 mb-2">
 		<p class="ml-1 text-text-secondary text-sm font-semibold uppercase">
 			{{ props.title }}
 		</p>
@@ -25,7 +25,6 @@
 			</p>
 		</div>
 	</div>
-	
 
 </template>
 

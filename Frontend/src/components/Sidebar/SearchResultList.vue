@@ -3,7 +3,9 @@
 
 	import { computed, ref } from "vue";
 	import { IonIcon } from "@ionic/vue";
-	import { chevronDown } from "ionicons/icons";
+	import { chevronDown, flower } from "ionicons/icons";
+
+	import FadeTransition from "../Transitions/FadeTransition.vue";
 
 	const isOpen = ref<boolean>(true);
 
@@ -34,8 +36,9 @@
 
 <template>
 
-	<div class="flex flex-col gap-1">
+	<div class="flex flex-col gap-1 mb-2">
 
+		<!-- Drop button -->
 		<div class="ml-1 gap-1 flex items-center">
 			<button @click="handleListOpenButton" class="flex items-center justify-center cursor-pointer">
 				<IonIcon :icon="chevronDown" class="text-m text-text-secondary transition-transform" :class="{ 'rotate-180': isOpen }" />
@@ -45,20 +48,30 @@
 			</p>
 		</div>
 
-		<div class="overflow-hidden">
-			<div class="flex flex-col border-border border rounded-lg divide-border divide-y transition-transform ease-in" :class="{ '-translate-y-full': !isOpen }">
-				<div v-for="item in props.data" class="hover:bg-sucrface-secondary">
-					<div @click="emitSelect(item)" class="flex items-center gap-2 px-2 py-4 cursor-pointer">
-						<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-							<IonIcon :icon="props.icon" class="text-xl text-text-secondary" />
+		<FadeTransition>
+
+			<!-- Loading Wheel -->
+			<div class="flex justify-center items-center" v-if="data.length == 0">
+				<IonIcon :icon="flower" class="text-4xl text-text-secondary animate-spin transition"/>
+			</div>
+
+			<!-- ResultList -->
+			<div class="overflow-hidden" v-else>
+				<div class="flex flex-col border-border border rounded-lg divide-border divide-y transition-transform ease-in" :class="{ '-translate-y-full': !isOpen }">
+					<div v-for="item in props.data" class="hover:bg-sucrface-secondary">
+						<div @click="emitSelect(item)" class="flex items-center gap-2 px-2 py-4 cursor-pointer">
+							<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
+								<IonIcon :icon="props.icon" class="text-xl text-text-secondary" />
+							</div>
+							<p class="text-text-primary">
+								{{ presenter(item) }}
+							</p>
 						</div>
-						<p class="text-text-primary">
-							{{ presenter(item) }}
-						</p>
 					</div>
 				</div>
 			</div>
-		</div>
+
+		</FadeTransition>
 
 	</div>
 
