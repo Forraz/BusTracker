@@ -66,14 +66,14 @@
 		<FadeTransition>
 
 			<!-- Back button -->
-			<div class="cursor-pointer" v-if="sidebar.selectedStop.value">
-				<button @click="sidebar.back">
+			<div class="flex item-center" v-if="sidebar.selectedStop.value">
+				<button class="justify-self-start cursor-pointer" @click="sidebar.back" >
 					<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
 				</button>
 			</div>
 		
 			<!-- Search type  -->
-			<div class="flex gap-2 justify-center items-center" v-if="!sidebar.selectedStop.value">
+			<div class="flex gap-2 justify-center items-center" v-else>
 
 				<div class="flex justify-center items-center gap-2">
 					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">

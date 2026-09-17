@@ -14,9 +14,9 @@ import { LatLng } from "leaflet";
 
 export class SidebarState {
 
-	stops = ref<Stop[]>([]);
-	routes = ref<Route[]>([]);
-	vehicles = ref<Vehicle[]>([]);
+	stops = ref<Stop[] | null>([]);
+	routes = ref<Route[] | null>([]);
+	vehicles = ref<Vehicle[] | null>([]);
 
 	selectedStop = ref<Stop | null>(null);
 	selectedRoute = ref<Route | null>(null);
@@ -34,6 +34,8 @@ export class SidebarState {
 
 	async queryStops(name: string) {
 
+		this.stops.value = null;
+
 		const data = await stopService.query(new URLSearchParams(`name=${name}&limit=20`)) || [];
 		this.stops.value = data;
 
@@ -41,7 +43,7 @@ export class SidebarState {
 
 	async fetchRoutesByStopId(stopId: string) {
 
-		this.routes.value = [];
+		this.routes.value = null;
 
 		const data = await stopService.getRoutesById(stopId) || [];
 		this.routes.value = data;
@@ -50,7 +52,7 @@ export class SidebarState {
 
 	async fetchVehiclesByRouteId(routeId: string) {
 
-		this.vehicles.value = [];
+		this.vehicles.value = null;
 
 		const data = await routeService.getVehiclesById(routeId) || [];
 		this.vehicles.value = data;

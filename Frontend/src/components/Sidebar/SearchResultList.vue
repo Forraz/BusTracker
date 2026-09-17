@@ -12,7 +12,7 @@
 	const props = defineProps<{
 		title: string,
 		icon: any,
-		data: [any],
+		data: [any] | null,
 		presenter: () => any
 	}>();
 
@@ -51,12 +51,12 @@
 		<FadeTransition>
 
 			<!-- Loading Wheel -->
-			<div class="flex justify-center items-center" v-if="data.length == 0">
+			<div class="flex justify-center items-center" v-if="!data">
 				<IonIcon :icon="flower" class="text-4xl text-text-secondary animate-spin transition"/>
 			</div>
 
 			<!-- ResultList -->
-			<div class="overflow-hidden" v-else>
+			<div class="overflow-hidden" v-else-if="data.length != 0">
 
 				<Transition
 					enter-active-class="duration-350 linear"
@@ -82,6 +82,11 @@
 				</Transition>
 
 			</div>
+
+			<div class="flex justify-center items-center" v-else>
+				<p>No {{ props.title }} found</p>
+			</div>
+
 		</FadeTransition>
 
 	</div>
