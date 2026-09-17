@@ -57,20 +57,31 @@
 
 			<!-- ResultList -->
 			<div class="overflow-hidden" v-else>
-				<div class="flex flex-col border-border border rounded-lg divide-border divide-y transition-transform ease-in" :class="{ '-translate-y-full': !isOpen }">
-					<div v-for="item in props.data" class="hover:bg-sucrface-secondary">
-						<div @click="emitSelect(item)" class="flex items-center gap-2 px-2 py-4 cursor-pointer">
-							<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-								<IonIcon :icon="props.icon" class="text-xl text-text-secondary" />
+
+				<Transition
+					enter-active-class="duration-350 linear"
+					enter-from-class="-translate-y-full"
+					enter-to-class="translate-y-none"
+
+					leave-active-class="duration-350 linear"
+					leave-from-class="translate-y-none"
+					leave-to-class="-translate-y-full"
+				>
+					<div class="flex flex-col border-border border rounded-lg divide-border divide-y" v-if="isOpen">
+						<div v-for="item in props.data" class="hover:bg-sucrface-secondary">
+							<div @click="emitSelect(item)" class="flex items-center gap-2 px-2 py-4 cursor-pointer">
+								<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
+									<IonIcon :icon="props.icon" class="text-xl text-text-secondary" />
+								</div>
+								<p class="text-text-primary">
+									{{ presenter(item) }}
+								</p>
 							</div>
-							<p class="text-text-primary">
-								{{ presenter(item) }}
-							</p>
 						</div>
 					</div>
-				</div>
-			</div>
+				</Transition>
 
+			</div>
 		</FadeTransition>
 
 	</div>

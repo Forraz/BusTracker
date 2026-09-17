@@ -8,11 +8,11 @@
 <template>
 
 	<Transition 
-		enter-active-class="duration-250 ease-in"
+		enter-active-class="duration-150 ease-in"
 		enter-from-class="opacity-0"
 		enter-to-class="opacity-100"
 
-		leave-active-class="duration-250 ease-in"
+		leave-active-class="duration-150 ease-out"
 		leave-from-class="opacity-100"
 		leave-to-class="opacity-0"
 

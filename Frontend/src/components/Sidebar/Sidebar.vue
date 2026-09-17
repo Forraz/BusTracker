@@ -63,37 +63,38 @@
 <template>
 	<div class="absolute right-0 top-0 flex flex-col z-1000 max-w-120 w-full h-screen overflow-y-auto bg-surface p-4 gap-6 rounded-l-lg">
 
-		<!-- Back button -->
 		<FadeTransition>
+
+			<!-- Back button -->
 			<div class="cursor-pointer" v-if="sidebar.selectedStop.value">
-				<div @click="sidebar.back">
+				<button @click="sidebar.back">
 					<IonIcon :icon="arrowBack" class="text-2xl text-text-secondary" />
+				</button>
+			</div>
+		
+			<!-- Search type  -->
+			<div class="flex gap-2 justify-center items-center" v-if="!sidebar.selectedStop.value">
+
+				<div class="flex justify-center items-center gap-2">
+					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
+						<IonIcon :icon="layers" class="text-xl text-text-secondary" />
+					</div>
+					<p class="text-text-primary">
+						By Stop
+					</p>
+				</div>
+
+				<div class="flex justify-center items-center gap-2">
+					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
+						<IonIcon :icon="swapHorizontal" class="text-xl text-text-secondary" />
+					</div>
+					<p class="text-text-primary">
+						By Route
+					</p>
 				</div>
 			</div>
+
 		</FadeTransition>
-
-		<!-- Search type  -->
-		<div class="flex gap-2 justify-center items-center" v-if="!sidebar.selectedStop.value">
-
-			<div class="flex justify-center items-center gap-2">
-				<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-					<IonIcon :icon="layers" class="text-xl text-text-secondary" />
-				</div>
-				<p class="text-text-primary">
-					By Stop
-				</p>
-			</div>
-
-			<div class="flex justify-center items-center gap-2">
-				<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-					<IonIcon :icon="swapHorizontal" class="text-xl text-text-secondary" />
-				</div>
-				<p class="text-text-primary">
-					By Route
-				</p>
-			</div>
-
-		</div>
 
 		<SearchBar @input="handleSearchBarInput" :autoFocus="true" v-model="searchInput" v-if="!sidebar.selectedStop.value" />
 
