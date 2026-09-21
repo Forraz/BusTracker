@@ -80,7 +80,7 @@ describe("Trip domain endpoints", () => {
 				vehicle: {
 					tripId: "TRIP_1",
 					routeId: "ROUTE_1",
-					position: {
+					coordinates: {
 						lat: 52.0907,
 						lon: 5.1214,
 					}
