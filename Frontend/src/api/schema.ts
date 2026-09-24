@@ -11,7 +11,8 @@ const StopSchema = z.object({
 
 	id: z.string(),
 	name: z.string(),
-	coordinates: CoordinatesSchema
+	coordinates: CoordinatesSchema,
+	parentStation: z.string().nullable()
 
 });
 

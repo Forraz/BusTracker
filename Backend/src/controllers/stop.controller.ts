@@ -50,6 +50,8 @@ export class StopController extends Controller {
 		const resultsByName: Stop[] = await this.stopService.getStopsByName(req.query.name, limit);
 		const stops: StopDTO[] = mapStopsToDTO(resultsByName);
 
+		console.log(stops)
+
 		const responseData = {
 
 			stops: stops

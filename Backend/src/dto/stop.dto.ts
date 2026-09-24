@@ -7,6 +7,7 @@ export type StopDTO = {
 	id: string,
 	name: string,
 	coordinates: Coordinates
+	parentStation: string | null
 
 }
 
@@ -25,7 +26,8 @@ export function mapStopToDTO(stop: Stop): StopDTO {
 		coordinates: {
 			lat: stop.stopLat,
 			lon: stop.stopLon
-		}
+		},
+		parentStation: stop.parentStation
 
 	};
 

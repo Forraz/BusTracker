@@ -244,13 +244,18 @@
                           "lat",
                           "lon"
                         ]
+                      },
+                      "parentStation": {
+                        "type": "string",
+                        "nullable": true
                       }
                     },
                     "additionalProperties": false,
                     "required": [
                       "coordinates",
                       "id",
-                      "name"
+                      "name",
+                      "parentStation"
                     ]
                   }
                 }
@@ -316,13 +321,18 @@
                           "lat",
                           "lon"
                         ]
+                      },
+                      "parentStation": {
+                        "type": "string",
+                        "nullable": true
                       }
                     },
                     "additionalProperties": false,
                     "required": [
                       "coordinates",
                       "id",
-                      "name"
+                      "name",
+                      "parentStation"
                     ]
                   }
                 }
@@ -378,13 +388,18 @@
                         "lat",
                         "lon"
                       ]
+                    },
+                    "parentStation": {
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "additionalProperties": false,
                   "required": [
                     "coordinates",
                     "id",
-                    "name"
+                    "name",
+                    "parentStation"
                   ]
                 }
               }
@@ -660,13 +675,18 @@
                           "lat",
                           "lon"
                         ]
+                      },
+                      "parentStation": {
+                        "type": "string",
+                        "nullable": true
                       }
                     },
                     "additionalProperties": false,
                     "required": [
                       "coordinates",
                       "id",
-                      "name"
+                      "name",
+                      "parentStation"
                     ]
                   }
                 }
