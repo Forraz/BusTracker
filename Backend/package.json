@@ -6,7 +6,8 @@
     "test": "vitest --reporter verbose | pino-pretty",
     "dev": "tsx watch ./src/index.ts | pino-pretty",
     "docs": "tspec generate",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "loadData": "tsx ./tools/loadGtfsData.ts"
   },
   "keywords": [],
   "author": "",

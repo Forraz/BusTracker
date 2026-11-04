@@ -27,7 +27,7 @@ export class GTFSImporter {
 	public async updateData(dataFileName: string) {
 
 		await this.unzipData(dataFileName);
-		await this.loadData();
+		await this.loadData(STATIC_DATA_DIR_PATH);
 
 	}
 
@@ -37,7 +37,7 @@ export class GTFSImporter {
 
 	}
 
-	public async loadData() {
+	public async loadData(dataDirPath: string) {
 
 		const client: PoolClient =  await this.database.pool.connect();
 		const tables: Array<PgTable> = [routesTable, shapesTable, tripsTable, stopsTable, stopTimesTable, calendarDatesTable];
@@ -53,7 +53,7 @@ export class GTFSImporter {
 				const tableName = getTableName(table);
 				const stagingTableName = `${tableName}_staging`;
 
-				const csvPath = join(STATIC_DATA_DIR_PATH, `${tableName}.txt`);
+				const csvPath = join(dataDirPath, `${tableName}.txt`);
 
 				await client.query(`
 					DROP TABLE IF EXISTS ${stagingTableName};
