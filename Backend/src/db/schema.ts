@@ -53,7 +53,8 @@ export const stopsTable = pgTable("stops", {
 	stopTimezone: text("stop_timezone"),
 	wheelchairBoarding: integer("wheelchair_boarding"),
 	platformCode: text("platform_code"),
-	zoneId: text("zone_id")
+	zoneId: text("zone_id"),
+    stopIfopt: text("stop_ifopt")
 
 });
 
