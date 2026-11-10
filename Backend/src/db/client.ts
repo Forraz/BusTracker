@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { Pool } from "pg";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
+import { getDBUrl } from '../utils/dbUrl.js';
 
 
 export class Database {
@@ -12,7 +13,8 @@ export class Database {
 
 		if (connectionString === "") {
 
-			connectionString = process.env.DATABASE_URL ?? "";
+            connectionString = getDBUrl();
+
 
 		}
 

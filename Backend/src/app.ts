@@ -51,9 +51,15 @@ export class App {
 
 		database: Database,
 		gtfsRtProvider: GTFSRtProvider,
-		private port: number = 3000
+		private port: number = -1
 
 	) {
+
+        if (port == -1) {
+
+            this.port = Number(process.env!.PORT) || 3000;
+
+        }
 
 		const stopRepository = new StopRepository(database);
 		const tripRepository = new TripRepository(database);
