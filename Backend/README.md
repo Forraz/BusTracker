@@ -1,12 +1,19 @@
 ## Setup
 
-Copy .env.example to .env and set your credentials
+# Create .env file
+```cp .env.example .env```
 
+Setup your credentials in .env file. The postgres docker container will be created using those credentials.
+
+# Start database container
+```docker compose up -d```
+
+# Install dependencies
 ```npm i```
 
+# Generate migration and migrate
 ```npx drizzle-kit generate```
-
-```npx drizzle-it migrate```
+```npx drizzle-kit migrate```
 
 ## Usage
 
