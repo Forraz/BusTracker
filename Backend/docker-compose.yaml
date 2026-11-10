@@ -1,0 +1,26 @@
+services:
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    env_file:
+      .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports: 
+      - 5432:5432
+    volumes:
+      - gtfs-db-data:/var/lib/postgresql
+      - ./init:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+
+volumes:
+  gtfs-db-data:
