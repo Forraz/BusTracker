@@ -11,6 +11,8 @@ import { type MapState } from "./useMapState.ts";
 import { ref, computed,  } from "vue";
 import { LatLng } from "leaflet";
 
+import { useVehicleTracking, VehicleTracking } from "@/composables/useVehicleTracking.ts";
+
 
 export class SidebarState {
 
@@ -22,9 +24,8 @@ export class SidebarState {
 	selectedRoute = ref<Route | null>(null);
 	selectedVehicle = ref<Vehicle | null>(null);
 
-	movingVehicle = ref<MovingVehicle | null>(null);
-
 	map: MapState;
+    vehicleTracking: VehicleTracking | null = null;
 
 	constructor(map: MapState) {
 
@@ -145,7 +146,8 @@ export class SidebarState {
 		const movingVehicle = new MovingVehicle(vehicle, shape);
 
 		this.selectedVehicle.value = vehicle;
-		this.movingVehicle.value = movingVehicle;
+        this.vehicleTracking = useVehicleTracking(movingVehicle);
+        this.vehicleTracking.start();
 
 		this.map.setPosition(new LatLng(vehicle.coordinates.lat, vehicle.coordinates.lon));
 		this.map.setZoom(18);
@@ -155,7 +157,7 @@ export class SidebarState {
 			id: "currentVehicle",
 			position: computed(() => { 
 
-				const vehiclePosition = this.movingVehicle.value.getPosition();
+				const vehiclePosition = this.vehicleTracking.movingVehicle.value.getPosition();
 
 				return new LatLng(vehiclePosition.lat, vehiclePosition.lon) 
 
@@ -191,6 +193,11 @@ export class SidebarState {
 		if (selectedVehicle) {
 
 			this.selectedVehicle.value = null;
+
+            if (this.vehicleTracking) {
+                this.vehicleTracking.stop();
+            }
+
 			this.updateSelectedRoute();
 
 		} else if (selectedRoute) {
@@ -208,37 +215,6 @@ export class SidebarState {
 		}
 
 	}
-
-	updateMovingVehicle(deltaTime: number) {
-
-
-		if (this.movingVehicle.value) {
-
-			console.log(deltaTime);
-
-			this.movingVehicle.value.update(deltaTime);
-
-		}
-
-	}
-
-	async correctMovingVehicle() {
-
-		if (this.movingVehicle.value && this.selectedVehicle.value) {
-
-			 const vehicle = await tripService.getVehicleById(this.selectedVehicle.value.tripId);
-
-			 if (vehicle.coordinates.lat != this.selectedVehicle.value.coordinates.lat) {
-
-				this.selectedVehicle.value = vehicle;
-				this.movingVehicle.value.correct(vehicle);
-
-			}
-
-		}
-
-	}
-
 
 }
 

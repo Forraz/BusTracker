@@ -1,26 +1,16 @@
 <script setup lang="ts">
 
-	import stopService from "../../api/services/stop.service.ts";
-	import routeService from "../../api/services/route.service.ts";
-	import tripService from "../../api/services/trip.service.ts";
-	
-	import { type Coordinates } from "../../api/schema.ts";
-	import { MovingVehicle } from "../../utils/movingVehicle.ts";
-
-	import { along, nearestPointOnLine, lineString } from "@turf/turf";
-
 	import SearchBar from "./SearchBar.vue";
 	import SearchResultList from "./SearchResultList.vue";
 	import SelectedResultCard from "./SelectedResultCard.vue";
 
 	import FadeTransition from "../Transitions/FadeTransition.vue";
 
-	import { useMap } from "../../composables/useMap.ts";
-	import { type Marker, type Polyline } from "../../composables/useMapState.ts";
+    import { ref } from "vue";
 
+	import { useMap } from "../../composables/useMap.ts";
 	import { useSidebarState } from "../../composables/useSidebarState.ts";
 
-	import { ref, computed, onMounted } from "vue";
 	import { IonIcon } from "@ionic/vue";
 	import { swapHorizontal, layers, bus, arrowBack } from "ionicons/icons";
 	import { LatLng } from "leaflet";
@@ -36,28 +26,6 @@
 
 	}
 
-	onMounted(() => {
-
-		let lastTime = new Date();
-
-		setInterval(() => {
-
-			const now = new Date();
-			const deltaTime = (now - lastTime) / 1000;
-			lastTime = now;
-
-			sidebar.updateMovingVehicle(deltaTime);
-
-		}, 1000 / 60);
-
-		setInterval(() => {
-
-			sidebar.correctMovingVehicle();
-
-		}, 1000 * 5);
-
-	});
-
 </script>
 
 <template>
@@ -72,28 +40,6 @@
 				</button>
 			</div>
 		
-			<!-- Search type  -->
-			<div class="flex gap-2 justify-center items-center" v-else>
-
-				<div class="flex justify-center items-center gap-2">
-					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-						<IonIcon :icon="layers" class="text-xl text-text-secondary" />
-					</div>
-					<p class="text-text-primary">
-						By Stop
-					</p>
-				</div>
-
-				<div class="flex justify-center items-center gap-2">
-					<div class="flex justify-center items-center p-2 bg-surface-tertiary rounded-md">
-						<IonIcon :icon="swapHorizontal" class="text-xl text-text-secondary" />
-					</div>
-					<p class="text-text-primary">
-						By Route
-					</p>
-				</div>
-			</div>
-
 		</FadeTransition>
 
 		<SearchBar @input="handleSearchBarInput" :autoFocus="true" v-model="searchInput" v-if="!sidebar.selectedStop.value" />
